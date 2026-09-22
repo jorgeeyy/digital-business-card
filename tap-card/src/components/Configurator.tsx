@@ -129,7 +129,7 @@ export default function Configurator({ onDownload, hasPreview }: ConfiguratorPro
 
       <div className="actions-bar">
         <button className="btn-generate" onClick={onDownload} disabled={!hasPreview}>
-          {hasPreview ? '⬇ Download HTML' : 'Generating...'}
+          {hasPreview ? 'Download Card' : 'Generating...'}
         </button>
       </div>
     </div>
