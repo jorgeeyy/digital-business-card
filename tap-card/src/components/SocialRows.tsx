@@ -14,6 +14,7 @@ function getBaseUrl(platform: string, handle: string): string {
     Dribbble: `https://dribbble.com/${cleaned}`,
     Facebook: `https://facebook.com/${cleaned}`,
     Pinterest: `https://pinterest.com/${cleaned}`,
+    WhatsApp: `https://wa.me/${cleaned}`,
   };
   return map[platform] || '';
 }

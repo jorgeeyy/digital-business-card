@@ -63,6 +63,7 @@ export const socialPlatforms = [
   'Dribbble',
   'Facebook',
   'Pinterest',
+  'WhatsApp',
 ] as const;
 
 export type SocialPlatform = (typeof socialPlatforms)[number];
