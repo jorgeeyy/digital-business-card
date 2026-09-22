@@ -128,7 +128,7 @@ export function generateCardHtml(config: CardConfig): string {
   .portrait{position:relative;margin:-38px -26px 20px;aspect-ratio:4/5;overflow:hidden;background:${colors.cardBg};will-change:transform,opacity;transform-origin:center top;}${portraitStyle ? `.portrait{${portraitStyle}}` : ''}
   .portrait[hidden]{display:none;}
   .portrait img,.portrait video{width:100%;height:100%;object-fit:cover;object-position:center 18%;display:block;}
-  .portrait::after{content:"";position:absolute;left:0;right:0;bottom:0;height:40%;background:linear-gradient(180deg,transparent 55%,rgba(8,33,31,0.45));pointer-events:none;}
+  .portrait::after{content:"";position:absolute;left:0;right:0;bottom:0;height:50%;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,0.5) 100%);pointer-events:none;}
   .monogram{position:relative;width:60px;height:60px;margin:0 auto 18px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);background:radial-gradient(120% 120% at 30% 20%,rgba(255,215,180,0.14),rgba(255,215,180,0.02));font-family:var(--serif);font-size:24px;color:var(--sand);letter-spacing:0.02em;}
   .monogram[hidden]{display:none;}
   h1{position:relative;font-family:var(--serif);font-weight:400;font-size:34px;line-height:1.06;text-align:center;margin:0 0 10px;letter-spacing:-0.01em;}
@@ -167,8 +167,8 @@ export function generateCardHtml(config: CardConfig): string {
   <main class="card">
     ${portraitHtml}
     <div class="monogram reveal" ${monogramHidden}>${initials}</div>
-    <p class="eyebrow reveal">${escHtml(location || 'Your City · Country')}</p>
     <h1 class="reveal">${escHtml(name || 'Your Name')}</h1>
+    <p class="eyebrow reveal">${escHtml(location || 'Your City · Country')}</p>
     <p class="role reveal">${escHtml(role || '')}</p>
     <button class="save reveal" type="button" onclick="window.location.href='${vcardData}'">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
