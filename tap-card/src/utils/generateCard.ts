@@ -138,7 +138,8 @@ export function generateCardHtml(config: CardConfig): string {
   *{box-sizing:border-box;}
   html,body{margin:0;height:100svh;overflow:hidden;}
   body{height:100svh;font-family:var(--sans);color:var(--cream);background:radial-gradient(120% 80% at 50% -10%,var(--teal-2) 0%,var(--teal) 38%,var(--ink) 78%) fixed;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;display:flex;justify-content:center;padding:max(20px,env(safe-area-inset-top)) 18px max(28px,env(safe-area-inset-bottom));}
-  .card{width:100%;max-width:420px;height:100svh;align-self:center;position:relative;padding:38px 26px 26px;border-radius:24px;background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0) 40%);border:1px solid var(--line);box-shadow:0 1px 0 rgba(255,255,255,0.05) inset,0 30px 70px -30px rgba(0,0,0,0.6);overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;}
+  .card{width:100%;max-width:420px;height:100svh;align-self:center;position:relative;padding:38px 26px 26px;border-radius:24px;background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0) 40%);border:1px solid var(--line);box-shadow:0 1px 0 rgba(255,255,255,0.05) inset,0 30px 70px -30px rgba(0,0,0,0.6);overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+  .card::-webkit-scrollbar{display:none;}
   .card::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 38% at 50% 14%,rgba(255,215,180,0.15),transparent 70%);pointer-events:none;transform-origin:50% 15%;will-change:transform,opacity;}
   .eyebrow{position:relative;text-align:center;font-size:11px;letter-spacing:0.32em;text-transform:uppercase;color:var(--sand);opacity:0.85;margin:0 0 18px;}
   .portrait{position:relative;margin:-38px -26px 20px;aspect-ratio:4/5;overflow:hidden;background:${colors.cardBg};will-change:transform,opacity;transform-origin:center top;}

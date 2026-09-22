@@ -506,6 +506,10 @@ body {
   border: none;
   border-radius: 12px;
   background: #000;
+  scrollbar-width: none;
+}
+.preview-frame iframe::-webkit-scrollbar {
+  display: none;
 }
 
 .preview-empty {
