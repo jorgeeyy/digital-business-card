@@ -133,26 +133,18 @@ export function generateCardHtml(config: CardConfig): string {
   .monogram[hidden]{display:none;}
   h1{position:relative;font-family:var(--serif);font-weight:400;font-size:34px;line-height:1.06;text-align:center;margin:0 0 10px;letter-spacing:-0.01em;}
   .role{position:relative;text-align:center;font-size:13.5px;line-height:1.5;color:var(--cream-dim);margin:0 auto 24px;max-width:30ch;}
-  .save{position:relative;width:100%;border:0;cursor:pointer;font-family:var(--sans);font-size:15px;font-weight:650;letter-spacing:0.01em;color:${isLight ? '#ffffff' : '#16302b'};background:linear-gradient(180deg,var(--sand),var(--sand-deep));padding:16px 18px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 14px 30px -14px rgba(255,215,180,0.55);transition:transform .12s ease,box-shadow .2s ease,filter .2s ease;}
-  .save:hover{filter:brightness(1.03);}
-  .save:active{transform:translateY(1px) scale(0.995);}
+  .save{position:relative;width:100%;border:0;cursor:pointer;font-family:var(--sans);font-size:15px;font-weight:650;letter-spacing:0.01em;color:${isLight ? '#ffffff' : '#16302b'};background:linear-gradient(180deg,var(--sand),var(--sand-deep));padding:16px 18px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;gap:10px;}
   .save svg{width:18px;height:18px;}
   .actions{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
-  .actions button{display:flex;align-items:center;justify-content:center;gap:8px;padding:13px 10px;border-radius:13px;border:1px solid var(--line);background:rgba(255,255,255,0.025);color:var(--cream);font-family:var(--sans);font-size:13px;font-weight:600;letter-spacing:0.01em;cursor:pointer;transition:background .18s ease,border-color .18s ease,transform .12s ease;}
-  .actions button:active{transform:translateY(1px);}
-  .actions button:hover{background:rgba(255,215,180,0.07);}
+  .actions button{display:flex;align-items:center;justify-content:center;gap:8px;padding:13px 10px;border-radius:13px;border:1px solid var(--line);background:rgba(255,255,255,0.025);color:var(--cream);font-family:var(--sans);font-size:13px;font-weight:600;letter-spacing:0.01em;cursor:pointer;}
   .actions svg{width:17px;height:17px;color:var(--sand);}
   .quick{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px;}
-  .quick a{display:flex;flex-direction:column;align-items:center;gap:6px;padding:13px 6px;border-radius:13px;border:1px solid var(--line);background:rgba(255,255,255,0.025);color:var(--cream);text-decoration:none;font-size:11.5px;letter-spacing:0.02em;transition:background .18s ease,border-color .18s ease,transform .12s ease;}
-  .quick a:active{transform:translateY(1px);}
-  .quick a:hover{background:rgba(255,215,180,0.07);border-color:var(--line);}
+  .quick a{display:flex;flex-direction:column;align-items:center;gap:6px;padding:13px 6px;border-radius:13px;border:1px solid var(--line);background:rgba(255,255,255,0.025);color:var(--cream);text-decoration:none;font-size:11.5px;letter-spacing:0.02em;}
   .quick svg{width:19px;height:19px;color:var(--sand);}
   .sep{position:relative;display:flex;align-items:center;gap:12px;margin:24px 2px 14px;color:var(--sand);font-size:10.5px;letter-spacing:0.26em;text-transform:uppercase;opacity:0.7;}
   .sep::before,.sep::after{content:"";height:1px;flex:1;background:var(--line-soft);}
   .socials{position:relative;display:flex;flex-direction:column;gap:8px;}
-  .social{display:flex;align-items:center;gap:14px;padding:13px 15px;border-radius:13px;border:1px solid var(--line-soft);background:rgba(255,255,255,0.02);color:var(--cream);text-decoration:none;transition:background .18s ease,border-color .18s ease,transform .12s ease;}
-  .social:active{transform:translateY(1px);}
-  .social:hover{background:rgba(255,215,180,0.06);border-color:var(--line);}
+  .social{display:flex;align-items:center;gap:14px;padding:13px 15px;border-radius:13px;border:1px solid var(--line-soft);background:rgba(255,255,255,0.02);color:var(--cream);text-decoration:none;}
   .social .ic{width:22px;height:22px;flex:none;color:var(--sand);display:grid;place-items:center;}
   .social .ic svg{width:20px;height:20px;}
   .social .tx{display:flex;flex-direction:column;line-height:1.25;}
