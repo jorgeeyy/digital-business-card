@@ -1,9 +1,48 @@
 import { useConfig } from '../store';
 import { socialPlatforms } from '../types';
 
+function getBaseUrl(platform: string, handle: string): string {
+  const cleaned = handle.replace(/^@/, '').trim();
+  if (!cleaned) return '';
+  const map: Record<string, string> = {
+    Instagram: `https://instagram.com/${cleaned}`,
+    LinkedIn: `https://linkedin.com/in/${cleaned}`,
+    'Twitter/X': `https://x.com/${cleaned}`,
+    TikTok: `https://tiktok.com/@${cleaned}`,
+    YouTube: `https://youtube.com/@${cleaned}`,
+    GitHub: `https://github.com/${cleaned}`,
+    Dribbble: `https://dribbble.com/${cleaned}`,
+    Facebook: `https://facebook.com/${cleaned}`,
+    Pinterest: `https://pinterest.com/${cleaned}`,
+  };
+  return map[platform] || '';
+}
+
 export default function SocialRows() {
   const { config, addSocial, updateSocial, removeSocial } = useConfig();
   const { socials } = config;
+
+  const handlePlatformChange = (index: number, platform: string) => {
+    const handle = socials[index].handle;
+    updateSocial(index, 'platform', platform);
+    if (handle) {
+      const url = getBaseUrl(platform, handle);
+      if (url) updateSocial(index, 'url', url);
+    }
+  };
+
+  const handleHandleChange = (index: number, value: string) => {
+    const platform = socials[index].platform;
+    updateSocial(index, 'handle', value);
+    const url = getBaseUrl(platform, value);
+    if (url) {
+      updateSocial(index, 'url', url);
+    } else if (value.startsWith('http://') || value.startsWith('https://')) {
+      updateSocial(index, 'url', value);
+    } else {
+      updateSocial(index, 'url', '');
+    }
+  };
 
   return (
     <>
@@ -12,7 +51,7 @@ export default function SocialRows() {
           <div className="social-row" key={i}>
             <select
               value={soc.platform}
-              onChange={(e) => updateSocial(i, 'platform', e.target.value)}
+              onChange={(e) => handlePlatformChange(i, e.target.value)}
             >
               {socialPlatforms.map((p) => (
                 <option key={p} value={p}>{p}</option>
@@ -20,15 +59,16 @@ export default function SocialRows() {
             </select>
             <input
               type="text"
-              placeholder="Handle"
+              placeholder="Handle or URL"
               value={soc.handle}
-              onChange={(e) => updateSocial(i, 'handle', e.target.value)}
+              onChange={(e) => handleHandleChange(i, e.target.value)}
             />
             <input
               type="text"
-              placeholder="https://..."
+              placeholder="Auto-generated"
               value={soc.url}
-              onChange={(e) => updateSocial(i, 'url', e.target.value)}
+              readOnly
+              style={{ opacity: 0.6 }}
             />
             <button className="btn-remove" onClick={() => removeSocial(i)}>
               ×

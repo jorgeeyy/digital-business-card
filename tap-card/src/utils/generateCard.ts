@@ -75,10 +75,11 @@ export function generateCardHtml(config: CardConfig): string {
 
   let socialsHtml = '';
   socials.forEach((soc) => {
-    if (!soc.url) return;
+    const url = soc.url || '';
+    if (!url) return;
     const icon = socialIcon(soc.platform);
-    const handle = soc.handle ? `@${soc.handle}` : soc.url;
-    socialsHtml += `<a class="social" href="${soc.url}" target="_blank" rel="noopener">
+    const handle = soc.handle ? `@${soc.handle}` : url;
+    socialsHtml += `<a class="social" href="${url}" target="_blank" rel="noopener">
       <div class="ic">${icon}</div>
       <div class="tx"><span class="name">${soc.platform}</span><span class="sub">${escHtml(handle)}</span></div>
       <div class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
@@ -175,7 +176,7 @@ export function generateCardHtml(config: CardConfig): string {
       <span>Save my contact</span>
     </button>
     <div class="actions reveal">
-      <button type="button" onclick="navigator.share?.({title:'${escHtml(name)}',url:window.location.href}).catch(()=>{})">
+      <button type="button" id="shareBtn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg>
         <span>Share</span>
       </button>
@@ -189,7 +190,20 @@ export function generateCardHtml(config: CardConfig): string {
     <footer class="reveal"></footer>
   </main>
   ${qrModalHtml}
-  <script>document.getElementById('qrModal')?.addEventListener('click',e=>{if(e.target===e.currentTarget)e.target.classList.remove('show')});</script>
+  <script>
+    document.getElementById('qrModal')?.addEventListener('click',function(e){if(e.target===e.currentTarget)e.target.classList.remove('show')});
+    document.getElementById('shareBtn')?.addEventListener('click',function(){
+      var url=window.location.href;
+      var span=this.querySelector('span');
+      if(navigator.share&&location.protocol!=='file:'){
+        navigator.share({title:'${escHtml(name)}',url:url}).catch(function(){
+          prompt('Copy this link:',url);
+        });
+      }else{
+        prompt('Copy this link:',url);
+      }
+    });
+  </script>
 </body>
 </html>`;
 }

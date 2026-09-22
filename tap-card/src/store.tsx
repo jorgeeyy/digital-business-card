@@ -1,5 +1,7 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react';
 import type { CardConfig, BrandColors, Palette, SocialLink, Portrait } from './types';
+
+const STORAGE_KEY = 'tap-card-config';
 
 const defaultColors: BrandColors = {
   primary: '#1a1404',
@@ -29,6 +31,23 @@ const defaultConfig: CardConfig = {
   qr: null,
 };
 
+function loadConfig(): CardConfig {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return defaultConfig;
+    const parsed = JSON.parse(raw);
+    return { ...defaultConfig, ...parsed };
+  } catch {
+    return defaultConfig;
+  }
+}
+
+function saveConfig(config: CardConfig) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+  } catch { /* quota exceeded or private mode */ }
+}
+
 interface ConfigContextType {
   config: CardConfig;
   updateConfig: (patch: Partial<CardConfig>) => void;
@@ -44,7 +63,11 @@ interface ConfigContextType {
 const ConfigContext = createContext<ConfigContextType | null>(null);
 
 export function ConfigProvider({ children }: { children: ReactNode }) {
-  const [config, setConfig] = useState<CardConfig>(defaultConfig);
+  const [config, setConfig] = useState<CardConfig>(loadConfig);
+
+  useEffect(() => {
+    saveConfig(config);
+  }, [config]);
 
   const updateConfig = useCallback((patch: Partial<CardConfig>) => {
     setConfig((prev) => ({ ...prev, ...patch }));
