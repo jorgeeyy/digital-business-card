@@ -80,7 +80,7 @@ export function generateCardHtml(config: CardConfig): string {
     const url = soc.url || '';
     if (!url) return;
     const icon = socialIcon(soc.platform);
-    const handle = soc.handle ? `@${soc.handle}` : url;
+    const handle = soc.platform === 'WhatsApp' ? soc.handle : (soc.handle ? `@${soc.handle}` : url);
     socialsHtml += `<a class="social" href="${url}" target="_blank" rel="noopener">
       <div class="ic">${icon}</div>
       <div class="tx"><span class="name">${soc.platform}</span><span class="sub">${escHtml(handle)}</span></div>
