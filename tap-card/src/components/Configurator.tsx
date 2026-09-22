@@ -77,15 +77,6 @@ export default function Configurator({ onDownload, hasPreview }: ConfiguratorPro
           />
         </div>
         <div className="field">
-          <label>WhatsApp (number with country code)</label>
-          <input
-            type="text"
-            placeholder="12345678900"
-            value={config.whatsapp}
-            onChange={(e) => updateConfig({ whatsapp: e.target.value })}
-          />
-        </div>
-        <div className="field">
           <label>Email</label>
           <input
             type="email"

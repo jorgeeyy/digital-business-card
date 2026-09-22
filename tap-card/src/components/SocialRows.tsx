@@ -59,8 +59,8 @@ export default function SocialRows() {
               ))}
             </select>
             <input
-              type="text"
-              placeholder="Handle or URL"
+              type={soc.platform === 'WhatsApp' ? 'tel' : 'text'}
+              placeholder={soc.platform === 'WhatsApp' ? 'Phone number with country code' : 'Handle or URL'}
               value={soc.handle}
               onChange={(e) => handleHandleChange(i, e.target.value)}
             />

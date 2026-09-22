@@ -23,7 +23,6 @@ const defaultConfig: CardConfig = {
   role: '',
   location: '',
   phone: '',
-  whatsapp: '',
   email: '',
   website: '',
   socials: [],

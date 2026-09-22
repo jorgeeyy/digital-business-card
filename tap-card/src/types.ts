@@ -45,7 +45,6 @@ export interface CardConfig {
   role: string;
   location: string;
   phone: string;
-  whatsapp: string;
   email: string;
   website: string;
   socials: SocialLink[];
