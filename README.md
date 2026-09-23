@@ -23,10 +23,12 @@ digital-business-card/
 ├── backend/           # FastAPI app (uv-managed)
 │   ├── pyproject.toml # Dependencies
 │   ├── uv.lock        # Locked versions
-│   ├── main.py        # App entry, CORS, routers
+│   ├── main.py        # App entry, CORS, routers, migrations on startup
 │   ├── models.py      # User, Card tables
 │   ├── auth.py        # Password hashing, JWT, current_user
 │   ├── r2.py          # R2 upload + local fallback
+│   ├── alembic.ini    # Alembic config
+│   ├── alembic/       # Migrations (versions/)
 │   └── routes/        # auth, cards, media, public card
 └── sample/            # Design reference files
 ```
@@ -51,6 +53,17 @@ uv run uvicorn main:app --reload --port 8000
 ```
 
 Backend runs at http://localhost:8000 (API docs at `/docs`).
+
+Schema is managed with **Alembic**. Migrations run automatically on server startup; you can also run them by hand:
+
+```bash
+cd backend
+uv run alembic upgrade head          # apply all pending migrations
+uv run alembic current               # show current revision
+uv run alembic history               # list migration history
+uv run alembic revision --autogenerate -m "describe change"  # after editing models.py
+uv run alembic downgrade -1          # roll back one migration
+```
 
 ### 2. Frontend
 
