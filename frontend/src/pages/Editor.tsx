@@ -1,11 +1,11 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
 import { useConfig } from '../store';
 import { useAuth } from '../auth';
 import { generateCardHtml } from '../utils/generateCard';
 import { publicCardUrl } from '../api';
 import Configurator from '../components/Configurator';
 import CardPreview from '../components/CardPreview';
+import AppShell from '../components/AppShell';
 
 export default function Editor() {
   const { config, card, saveStatus, setLatestHtml, saveNow, publish } = useConfig();
@@ -17,7 +17,6 @@ export default function Editor() {
   const [copied, setCopied] = useState(false);
   const previewTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Keep autosave HTML fresh immediately; debounce only the iframe rewrite
   useEffect(() => {
     const html = generateCardHtml(config);
     setLatestHtml(html);
@@ -65,38 +64,45 @@ export default function Editor() {
       await navigator.clipboard.writeText(publicCardUrl(card.username));
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch { /* clipboard unavailable */ }
+    } catch {
+      /* clipboard unavailable */
+    }
   }, [card]);
 
   const statusLabel =
-    saveStatus === 'saving' ? 'Saving…' : saveStatus === 'saved' ? 'Saved' : saveStatus === 'error' ? 'Save failed' : '';
+    saveStatus === 'saving'
+      ? 'Saving…'
+      : saveStatus === 'saved'
+        ? 'Saved'
+        : saveStatus === 'error'
+          ? 'Save failed'
+          : '';
+
+  const actions = (
+    <>
+      <span className={`save-indicator ${saveStatus}`} aria-live="polite">
+        {statusLabel}
+      </span>
+      <button className="btn btn-small btn-ghost" onClick={handleSave}>
+        Save
+      </button>
+      <button className="btn btn-small btn-ghost" onClick={handleDownload}>
+        Download
+      </button>
+      {card?.published && card.username ? (
+        <button className="btn btn-small" onClick={copyLink}>
+          {copied ? 'Copied!' : 'Copy link'}
+        </button>
+      ) : (
+        <button className="btn btn-small" onClick={() => setShowPublish(true)}>
+          Publish
+        </button>
+      )}
+    </>
+  );
 
   return (
-    <div className="editor-page">
-      <header className="editor-topbar">
-        <Link className="brand" to="/dashboard">
-          Tap<span>Card</span>
-        </Link>
-        <div className="topbar-right">
-          <span className={`save-indicator ${saveStatus}`}>{statusLabel}</span>
-          <button className="btn btn-small btn-ghost" onClick={handleSave}>
-            Save
-          </button>
-          <button className="btn btn-small btn-ghost" onClick={handleDownload}>
-            Download Card
-          </button>
-          {card?.published && card.username ? (
-            <button className="btn btn-small" onClick={copyLink}>
-              {copied ? 'Copied!' : 'Copy link'}
-            </button>
-          ) : (
-            <button className="btn btn-small" onClick={() => setShowPublish(true)} disabled={!cardHtml}>
-              Publish
-            </button>
-          )}
-        </div>
-      </header>
-
+    <AppShell actions={actions}>
       {card?.published && card.username && (
         <div className="published-banner">
           Your card is live at{' '}
@@ -106,8 +112,8 @@ export default function Editor() {
         </div>
       )}
 
-      <div className="app">
-        <Configurator onDownload={handleDownload} hasPreview={!!cardHtml} />
+      <div className="editor-layout">
+        <Configurator />
         <CardPreview html={cardHtml} />
       </div>
 
@@ -117,10 +123,13 @@ export default function Editor() {
           busy={publishing}
           error={publishError}
           onPublish={handlePublish}
-          onClose={() => { setShowPublish(false); setPublishError(null); }}
+          onClose={() => {
+            setShowPublish(false);
+            setPublishError(null);
+          }}
         />
       )}
-    </div>
+    </AppShell>
   );
 }
 
@@ -138,13 +147,28 @@ function PublishModal({
   onClose: () => void;
 }) {
   const [username, setUsername] = useState(defaultUsername);
+  const isValid = username.length >= 3;
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <h2>Publish your card</h2>
+    <div className="modal-backdrop" onClick={onClose} role="presentation">
+      <div
+        className="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="publish-title"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h2 id="publish-title">Publish your card</h2>
         <p className="modal-sub">Choose the username for your public link.</p>
-        <div className="username-field valid">
+        <div className={`username-field${isValid ? ' valid' : ''}`}>
           <span className="prefix">tapcard.app/</span>
           <input
             type="text"
@@ -153,14 +177,17 @@ function PublishModal({
             placeholder="johndoe"
             autoFocus
             spellCheck={false}
+            autoCapitalize="off"
           />
         </div>
-        {error && <div className="form-error">{error}</div>}
+        {error && <div className="form-error" style={{ marginTop: 12 }}>{error}</div>}
         <div className="modal-actions">
-          <button className="btn btn-ghost" onClick={onClose}>Cancel</button>
+          <button className="btn btn-ghost" onClick={onClose}>
+            Cancel
+          </button>
           <button
             className="btn"
-            disabled={busy || username.length < 3}
+            disabled={busy || !isValid}
             onClick={() => onPublish(username)}
           >
             {busy ? 'Publishing…' : 'Publish'}

@@ -7,10 +7,13 @@ export default function BrandPicker() {
 
   return (
     <>
-      <div className="palette-grid">
+      <div className="palette-grid" role="radiogroup" aria-label="Color palettes">
         {palettes.map((p) => (
           <button
             key={p.id}
+            type="button"
+            role="radio"
+            aria-checked={paletteId === p.id}
             className={`palette-swatch${paletteId === p.id ? ' active' : ''}`}
             onClick={() => setPalette(p)}
           >
@@ -36,6 +39,7 @@ export default function BrandPicker() {
             <input
               type="color"
               value={colors[key]}
+              aria-label={label}
               onChange={(e) => updateColors({ [key]: e.target.value })}
             />
             <label>{label}</label>

@@ -16,8 +16,9 @@ digital-business-card/
 ├── frontend/          # Vite + React app
 │   └── src/
 │       ├── pages/     # Landing, Login, Signup, Onboarding, Editor, Dashboard
-│       ├── components/# Configurator, pickers, upload, preview
-│       ├── store.tsx  # Card config (API-backed + localStorage draft)
+│       ├── components/# AppShell, AuthLayout, Configurator, pickers, upload, preview
+│       ├── styles/    # Design tokens + base/components/pages CSS (warm premium)
+│       ├── store.tsx  # Card config (API-backed + per-user localStorage draft)
 │       ├── auth.tsx   # Auth context
 │       └── api.ts     # API client
 ├── backend/           # FastAPI app (uv-managed)

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../api';
 import { useAuth } from '../auth';
+import AuthLayout from '../components/AuthLayout';
 
 const USERNAME_RE = /^[a-z0-9][a-z0-9_-]{2,29}$/;
 
@@ -68,33 +69,32 @@ export default function Onboarding() {
       : status === 'checking'
         ? 'Checking…'
         : status === 'available'
-          ? 'Available!'
+          ? 'Available — looks good!'
           : status === 'taken'
-            ? 'Already taken.'
+            ? 'Already taken. Try another.'
             : 'Lowercase letters, numbers, - and _';
 
   const hintClass =
     status === 'available' ? 'hint ok' : status === 'taken' || status === 'invalid' ? 'hint bad' : 'hint';
 
-  return (
-    <div className="auth-page">
-      <nav className="auth-nav">
-        <div className="brand">
-          Tap<span>Card</span>
-        </div>
-      </nav>
+  const fieldClass =
+    `username-field${status === 'available' ? ' valid' : ''}${status === 'taken' || status === 'invalid' ? ' invalid' : ''}`;
 
+  return (
+    <AuthLayout>
       <div className="auth-card">
-        <div className="onboard-badge">Step 1 of 2</div>
+        <div className="onboard-badge">
+          <span className="chip chip-draft">Step 1 of 2 · Claim link</span>
+        </div>
         <h1>Claim your link</h1>
         <p className="auth-sub">
-          Pick the username for your public card. This is the link you'll share.
+          Pick the username for your public card — this is the link you&apos;ll share everywhere.
         </p>
 
         <form onSubmit={submit} className="auth-form">
           <label>
             Username
-            <div className={`username-field${status === 'available' ? ' valid' : ''}`}>
+            <div className={fieldClass}>
               <span className="prefix">tapcard.app/</span>
               <input
                 type="text"
@@ -107,7 +107,9 @@ export default function Onboarding() {
               />
             </div>
           </label>
-          <div className={hintClass}>{hint}</div>
+          <div className={hintClass} role="status" aria-live="polite">
+            {hint}
+          </div>
           {error && <div className="form-error">{error}</div>}
           <button
             className="btn btn-full"
@@ -119,9 +121,9 @@ export default function Onboarding() {
         </form>
 
         <p className="auth-switch">
-          You can change this later from your dashboard.
+          Next you&apos;ll build your card in the editor. Step 2 of 2.
         </p>
       </div>
-    </div>
+    </AuthLayout>
   );
 }

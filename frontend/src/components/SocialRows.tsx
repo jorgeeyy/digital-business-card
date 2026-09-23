@@ -50,35 +50,40 @@ export default function SocialRows() {
       <div className="social-rows">
         {socials.map((soc, i) => (
           <div className="social-row" key={i}>
+            <label className="visually-hidden" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0 0 0 0)' }}>
+              Platform
+            </label>
             <select
               value={soc.platform}
+              aria-label={`Platform for link ${i + 1}`}
               onChange={(e) => handlePlatformChange(i, e.target.value)}
             >
               {socialPlatforms.map((p) => (
-                <option key={p} value={p}>{p}</option>
+                <option key={p} value={p}>
+                  {p}
+                </option>
               ))}
             </select>
             <input
               type={soc.platform === 'WhatsApp' ? 'tel' : 'text'}
-              placeholder={soc.platform === 'WhatsApp' ? 'Phone number with country code' : 'Handle or URL'}
+              placeholder={soc.platform === 'WhatsApp' ? 'Phone with country code' : 'Handle or URL'}
               value={soc.handle}
+              aria-label={`Handle for ${soc.platform}`}
               onChange={(e) => handleHandleChange(i, e.target.value)}
             />
-            <input
-              type="text"
-              placeholder="Auto-generated"
-              value={soc.url}
-              readOnly
-              style={{ opacity: 0.6 }}
-            />
-            <button className="btn-remove" onClick={() => removeSocial(i)}>
+            <button
+              type="button"
+              className="social-remove"
+              aria-label={`Remove ${soc.platform} link`}
+              onClick={() => removeSocial(i)}
+            >
               ×
             </button>
           </div>
         ))}
       </div>
       {socials.length < 6 && (
-        <button className="btn-add" onClick={addSocial}>
+        <button type="button" className="social-add" onClick={addSocial}>
           + Add social link
         </button>
       )}

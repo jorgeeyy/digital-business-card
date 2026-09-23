@@ -1,0 +1,123 @@
+/* Design tokens — light (default) + dark via [data-theme="dark"] */
+:root {
+  color-scheme: light;
+
+  /* Brand */
+  --ink: #1a1404;
+  --sand: #ffd633;
+  --sand-deep: #e8b923;
+  --accent: #8a6d0b;
+  --accent-hover: #6f5808;
+
+  /* Page + surfaces — plain white, neutral grays */
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-solid: #ffffff;
+  --surface-2: #f5f5f5;
+  --surface-3: #ebebeb;
+  --header-bg: rgba(255, 255, 255, 0.92);
+  --chip-bg: #fff8d6;
+
+  /* Text */
+  --text: #111111;
+  --text-dim: rgba(17, 17, 17, 0.62);
+  --text-faint: rgba(17, 17, 17, 0.4);
+
+  /* Legacy aliases */
+  --cream: #111111;
+  --cream-dim: rgba(17, 17, 17, 0.62);
+  --cream-faint: rgba(17, 17, 17, 0.4);
+
+  /* Borders — neutral */
+  --line: rgba(0, 0, 0, 0.1);
+  --line-soft: rgba(0, 0, 0, 0.06);
+  --line-strong: rgba(0, 0, 0, 0.18);
+  --border: rgba(0, 0, 0, 0.12);
+  --border-strong: rgba(0, 0, 0, 0.22);
+
+  /* Semantic */
+  --success: #1a7f37;
+  --success-soft: rgba(26, 127, 55, 0.1);
+  --error: #c62828;
+  --error-soft: rgba(198, 40, 40, 0.08);
+
+  /* Type */
+  --serif: Georgia, "Times New Roman", "Iowan Old Style", serif;
+  --display: "Playfair Display", Georgia, "Times New Roman", serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --ui: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  --fs-xs: 11px;
+  --fs-sm: 12.5px;
+  --fs-base: 14px;
+  --fs-md: 15px;
+  --fs-lg: 17px;
+  --fs-xl: 22px;
+  --fs-2xl: 28px;
+  --fs-3xl: clamp(36px, 6vw, 64px);
+
+  /* Geometry */
+  --r-sm: 8px;
+  --r: 16px;
+  --r-lg: 24px;
+  --r-pill: 999px;
+
+  /* Space */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+
+  /* Elevation */
+  --shadow-card: 0 20px 50px -24px rgba(0, 0, 0, 0.2);
+  --shadow-soft: 0 10px 30px -16px rgba(0, 0, 0, 0.15);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+
+  --header-h: 64px;
+  --max: 1120px;
+  --max-wide: 1400px;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --accent: #ffd633;
+  --accent-hover: #ffe066;
+
+  /* Plain black page, neutral dark surfaces */
+  --bg: #000000;
+  --surface: #111111;
+  --surface-solid: #111111;
+  --surface-2: #1a1a1a;
+  --surface-3: #242424;
+  --header-bg: rgba(0, 0, 0, 0.9);
+  --chip-bg: #2a2200;
+
+  --text: #f5f5f5;
+  --text-dim: rgba(245, 245, 245, 0.64);
+  --text-faint: rgba(245, 245, 245, 0.38);
+
+  --cream: #f5f5f5;
+  --cream-dim: rgba(245, 245, 245, 0.64);
+  --cream-faint: rgba(245, 245, 245, 0.38);
+
+  --line: rgba(255, 255, 255, 0.12);
+  --line-soft: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.22);
+  --border: rgba(255, 255, 255, 0.14);
+  --border-strong: rgba(255, 255, 255, 0.28);
+
+  --success: #3ecf6e;
+  --success-soft: rgba(62, 207, 110, 0.12);
+  --error: #ff8a80;
+  --error-soft: rgba(255, 112, 112, 0.12);
+
+  --shadow-card: 0 30px 70px -30px rgba(0, 0, 0, 0.8);
+  --shadow-soft: 0 18px 44px -22px rgba(0, 0, 0, 0.65);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+

@@ -18,17 +18,19 @@ export default function CardPreview({ html }: CardPreviewProps) {
   }, [html]);
 
   return (
-    <div className="preview-panel">
-      <div className="preview-label">Preview</div>
-      <div className="preview-frame">
+    <aside className="preview-panel" aria-label="Card preview">
+      <div className="preview-label">Live preview</div>
+      <div className="preview-stage">
         {html ? (
-          <iframe ref={ref} title="Card preview" sandbox="allow-same-origin" />
+          <div className="preview-frame">
+            <iframe ref={ref} title="Card preview" sandbox="allow-same-origin" />
+          </div>
         ) : (
           <div className="preview-empty">
             Fill in your details and the card will render live here.
           </div>
         )}
       </div>
-    </div>
+    </aside>
   );
 }

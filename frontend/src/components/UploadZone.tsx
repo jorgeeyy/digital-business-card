@@ -72,44 +72,77 @@ export default function UploadZone({ label, file, onFile, isPortrait, isVideoFil
     [handleFile],
   );
 
+  const zoneClass = [
+    'upload-drop',
+    dragging ? 'drag' : '',
+    file ? 'upload-filled' : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
   return (
-    <div>
-      <div className="upload-label">{label}</div>
+    <div className="upload-zone">
+      <div className="label">{label}</div>
       <div
-        className={`upload-zone${dragging ? ' dragging' : ''}${file ? ' has-file' : ''}`}
-        onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+        className={zoneClass}
+        onDragOver={(e) => {
+          e.preventDefault();
+          setDragging(true);
+        }}
         onDragLeave={() => setDragging(false)}
         onDrop={drop}
         onClick={() => !file && !uploading && ref.current?.click()}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            if (!file && !uploading) ref.current?.click();
+          }
+        }}
       >
         <input
           ref={ref}
           type="file"
           accept={isPortrait ? 'image/*,video/mp4,video/webm,video/mov' : 'image/*'}
-          style={{ display: 'none' }}
+          hidden
           onChange={change}
         />
         {uploading ? (
-          <div className="upload-text">Uploading…</div>
+          <div>Uploading…</div>
         ) : file ? (
           <>
             {isVideoFile ? (
-              <video src={file} className="preview" autoPlay loop muted playsInline />
+              <video src={file} autoPlay loop muted playsInline />
             ) : (
-              <img src={file} className="preview" alt="Preview" />
+              <img src={file} alt={`${label} preview`} />
             )}
-            <button className="remove-file" onClick={(e) => { e.stopPropagation(); onFile(null); }}>
+            <button
+              type="button"
+              className="upload-remove"
+              aria-label={`Remove ${label}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                onFile(null);
+              }}
+            >
               ×
             </button>
           </>
         ) : (
           <>
-            <div className="upload-icon">{isPortrait ? '🎬' : '📷'}</div>
-            <div className="upload-text">Drag & drop or click<br/>{isPortrait ? 'Image or video' : 'Image only'}</div>
+            <div className="icon" aria-hidden="true">
+              {isPortrait ? '🎬' : '📷'}
+            </div>
+            <div>
+              Drag &amp; drop or click
+              <br />
+              {isPortrait ? 'Image or video' : 'Image only'}
+            </div>
           </>
         )}
       </div>
-      {error && <div style={{ color: '#ff5050', fontSize: '11px', marginTop: '4px' }}>{error}</div>}
+      {error && <div className="upload-error">{error}</div>}
     </div>
   );
 }
