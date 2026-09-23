@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useConfig } from '../store';
 import { useAuth } from '../auth';
@@ -15,35 +15,40 @@ export default function Editor() {
   const [publishError, setPublishError] = useState<string | null>(null);
   const [publishing, setPublishing] = useState(false);
   const [copied, setCopied] = useState(false);
+  const previewTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Keep autosave HTML fresh immediately; debounce only the iframe rewrite
   useEffect(() => {
     const html = generateCardHtml(config);
-    setCardHtml(html);
     setLatestHtml(html);
+    if (previewTimer.current) clearTimeout(previewTimer.current);
+    previewTimer.current = setTimeout(() => setCardHtml(html), 250);
+    return () => {
+      if (previewTimer.current) clearTimeout(previewTimer.current);
+    };
   }, [config, setLatestHtml]);
 
   const handleDownload = useCallback(() => {
-    if (!cardHtml) return;
-    const blob = new Blob([cardHtml], { type: 'text/html' });
+    const html = generateCardHtml(config);
+    const blob = new Blob([html], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = 'tap-card.html';
     a.click();
     URL.revokeObjectURL(url);
-  }, [cardHtml]);
+  }, [config]);
 
   const handleSave = useCallback(async () => {
-    if (cardHtml) await saveNow(cardHtml);
-  }, [cardHtml, saveNow]);
+    await saveNow(generateCardHtml(config));
+  }, [config, saveNow]);
 
   const handlePublish = useCallback(
     async (username: string) => {
-      if (!cardHtml) return;
       setPublishing(true);
       setPublishError(null);
       try {
-        await publish(username, cardHtml);
+        await publish(username, generateCardHtml(config));
         setShowPublish(false);
       } catch (err) {
         setPublishError(err instanceof Error ? err.message : 'Publish failed');
@@ -51,7 +56,7 @@ export default function Editor() {
         setPublishing(false);
       }
     },
-    [cardHtml, publish],
+    [config, publish],
   );
 
   const copyLink = useCallback(async () => {
@@ -74,10 +79,10 @@ export default function Editor() {
         </Link>
         <div className="topbar-right">
           <span className={`save-indicator ${saveStatus}`}>{statusLabel}</span>
-          <button className="btn btn-small btn-ghost" onClick={handleSave} disabled={!cardHtml}>
+          <button className="btn btn-small btn-ghost" onClick={handleSave}>
             Save
           </button>
-          <button className="btn btn-small btn-ghost" onClick={handleDownload} disabled={!cardHtml}>
+          <button className="btn btn-small btn-ghost" onClick={handleDownload}>
             Download Card
           </button>
           {card?.published && card.username ? (

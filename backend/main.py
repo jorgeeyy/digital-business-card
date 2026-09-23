@@ -29,7 +29,10 @@ def serve_upload(filename: str):
     path = local_file_url(filename)
     if not path:
         return JSONResponse(status_code=404, content={"detail": "Not found"})
-    return FileResponse(path)
+    return FileResponse(
+        path,
+        headers={"Cache-Control": "public, max-age=31536000, immutable"},
+    )
 
 
 @app.get("/api/health")

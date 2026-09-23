@@ -1,8 +1,13 @@
 import { createContext, useContext, useState, useCallback, useEffect, useRef, type ReactNode } from 'react';
 import { api, type CardRecord } from './api';
+import { useAuth } from './auth';
 import type { CardConfig, BrandColors, Palette, SocialLink, Portrait } from './types';
 
-const STORAGE_KEY = 'tap-card-config';
+const LEGACY_KEY = 'tap-card-config';
+
+function storageKey(userId: number | null): string {
+  return userId == null ? 'tap-card-config:anon' : `tap-card-config:u:${userId}`;
+}
 
 const defaultColors: BrandColors = {
   primary: '#1a1404',
@@ -31,21 +36,28 @@ const defaultConfig: CardConfig = {
   qr: null,
 };
 
-function loadLocalConfig(): CardConfig {
+function loadLocalConfig(userId: number | null): CardConfig {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return defaultConfig;
+    localStorage.removeItem(LEGACY_KEY);
+    const raw = localStorage.getItem(storageKey(userId));
+    if (!raw) return { ...defaultConfig };
     const parsed = JSON.parse(raw);
     return { ...defaultConfig, ...parsed };
   } catch {
-    return defaultConfig;
+    return { ...defaultConfig };
   }
 }
 
-function saveLocalConfig(config: CardConfig) {
+function saveLocalConfig(config: CardConfig, userId: number | null) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+    localStorage.setItem(storageKey(userId), JSON.stringify(config));
   } catch { /* quota exceeded or private mode */ }
+}
+
+function clearLocalConfig(userId: number | null) {
+  try {
+    localStorage.removeItem(storageKey(userId));
+  } catch { /* ignore */ }
 }
 
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
@@ -72,17 +84,19 @@ interface ConfigContextType {
 const ConfigContext = createContext<ConfigContextType | null>(null);
 
 export function ConfigProvider({ children }: { children: ReactNode }) {
-  const [config, setConfig] = useState<CardConfig>(loadLocalConfig);
+  const { user, loading: authLoading } = useAuth();
+  const userId = user?.id ?? null;
+  const authReady = !authLoading;
+
+  const [config, setConfig] = useState<CardConfig>(() => ({ ...defaultConfig }));
   const [card, setCard] = useState<CardRecord | null>(null);
   const [cardLoading, setCardLoading] = useState(true);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const latestHtml = useRef<string>('');
   const hydrated = useRef(false);
-
-  useEffect(() => {
-    saveLocalConfig(config);
-  }, [config]);
+  const prevUserId = useRef<number | null | undefined>(undefined);
+  const loadedForUser = useRef<number | null | undefined>(undefined);
 
   const reloadCard = useCallback(async () => {
     setCardLoading(true);
@@ -104,9 +118,41 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // Switch draft scope when auth resolves or the user changes
   useEffect(() => {
+    if (!authReady) return;
+
+    const prev = prevUserId.current;
+
+    // Logout: drop that user's local draft (server autosave is the source of truth)
+    if (prev !== undefined && prev !== null && userId === null) {
+      clearLocalConfig(prev);
+    }
+
+    // Login/signup from anonymous: clean slate — never migrate anon draft into an account
+    if (userId !== null && prev === null) {
+      clearLocalConfig(null);
+    }
+
+    prevUserId.current = userId;
+    loadedForUser.current = undefined;
+    hydrated.current = false;
+    latestHtml.current = '';
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+
+    setCard(null);
+    setSaveStatus('idle');
+    setConfig(loadLocalConfig(userId));
+    loadedForUser.current = userId;
     reloadCard();
-  }, [reloadCard]);
+  }, [authReady, userId, reloadCard]);
+
+  // Persist draft only after the correct user's config has been loaded
+  useEffect(() => {
+    if (!authReady) return;
+    if (loadedForUser.current !== userId) return;
+    saveLocalConfig(config, userId);
+  }, [config, userId, authReady]);
 
   const performSave = useCallback(
     async (html: string): Promise<CardRecord | null> => {
@@ -131,7 +177,7 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
   );
 
   useEffect(() => {
-    if (!hydrated.current || cardLoading) return;
+    if (!authReady || !hydrated.current || cardLoading) return;
     if (saveTimer.current) clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(() => {
       if (latestHtml.current) performSave(latestHtml.current);
@@ -140,7 +186,7 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
       if (saveTimer.current) clearTimeout(saveTimer.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [config, cardLoading]);
+  }, [config, cardLoading, authReady]);
 
   const setLatestHtml = useCallback((html: string) => {
     latestHtml.current = html;
