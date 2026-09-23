@@ -24,3 +24,13 @@ dist-ssr
 *.sw?
 .opencode/
 sample/
+
+# Python backend (uv)
+backend/.venv/
+backend/__pycache__/
+backend/**/__pycache__/
+backend/*.pyc
+backend/.env
+backend/app.db
+backend/uploads/*
+!backend/uploads/.gitkeep

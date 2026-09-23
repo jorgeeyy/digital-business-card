@@ -106,21 +106,19 @@ export default function Configurator({ onDownload, hasPreview }: ConfiguratorPro
         <div className="upload-row">
           <UploadZone
             label="Portrait"
-            accept="image/*,video/mp4,video/webm,video/mov"
             file={config.portrait?.dataUrl || null}
-            onFile={(dataUrl) => {
-              if (!dataUrl) {
+            isVideoFile={config.portrait?.type === 'video'}
+            onFile={(url, isVideo) => {
+              if (!url) {
                 setPortrait(null);
               } else {
-                const isVideo = dataUrl.startsWith('data:video');
-                setPortrait({ type: isVideo ? 'video' : 'image', dataUrl });
+                setPortrait({ type: isVideo ? 'video' : 'image', dataUrl: url });
               }
             }}
             isPortrait
           />
           <UploadZone
             label="QR Code"
-            accept="image/*"
             file={config.qr || null}
             onFile={setQr}
           />

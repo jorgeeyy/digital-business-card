@@ -1,23 +1,26 @@
 import { useRef, useState, useCallback, type DragEvent, type ChangeEvent } from 'react';
+import { api } from '../api';
 
 const VALID_IMAGE = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
 const VALID_VIDEO = ['video/mp4', 'video/webm', 'video/quicktime'];
+const MAX_SIZE = 25 * 1024 * 1024;
 
 interface UploadZoneProps {
   label: string;
-  accept?: string;
   file: string | null;
-  onFile: (dataUrl: string | null) => void;
+  onFile: (url: string | null, isVideo?: boolean) => void;
   isPortrait?: boolean;
+  isVideoFile?: boolean;
 }
 
-export default function UploadZone({ label, file, onFile, isPortrait }: UploadZoneProps) {
+export default function UploadZone({ label, file, onFile, isPortrait, isVideoFile }: UploadZoneProps) {
   const ref = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   const handleFile = useCallback(
-    (f: File | null) => {
+    async (f: File | null) => {
       setError(null);
       if (!f) {
         onFile(null);
@@ -32,17 +35,20 @@ export default function UploadZone({ label, file, onFile, isPortrait }: UploadZo
         setError(`Invalid file type. Accepted: ${allowed}`);
         return;
       }
+      if (f.size > MAX_SIZE) {
+        setError('File too large (max 25MB)');
+        return;
+      }
 
-      const reader = new FileReader();
-      reader.onload = () => {
-        const url = reader.result as string;
-        if (isVideo) {
-          onFile(`data:video/mp4;base64,${url.split(',')[1]}`);
-        } else {
-          onFile(url);
-        }
-      };
-      reader.readAsDataURL(f);
+      setUploading(true);
+      try {
+        const url = await api.uploadMedia(f);
+        onFile(url, isVideo);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Upload failed');
+      } finally {
+        setUploading(false);
+      }
     },
     [onFile, isPortrait],
   );
@@ -61,6 +67,7 @@ export default function UploadZone({ label, file, onFile, isPortrait }: UploadZo
     (e: ChangeEvent<HTMLInputElement>) => {
       const f = e.target.files?.[0];
       if (f) handleFile(f);
+      e.target.value = '';
     },
     [handleFile],
   );
@@ -73,7 +80,7 @@ export default function UploadZone({ label, file, onFile, isPortrait }: UploadZo
         onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
         onDragLeave={() => setDragging(false)}
         onDrop={drop}
-        onClick={() => !file && ref.current?.click()}
+        onClick={() => !file && !uploading && ref.current?.click()}
       >
         <input
           ref={ref}
@@ -82,9 +89,11 @@ export default function UploadZone({ label, file, onFile, isPortrait }: UploadZo
           style={{ display: 'none' }}
           onChange={change}
         />
-        {file ? (
+        {uploading ? (
+          <div className="upload-text">Uploading…</div>
+        ) : file ? (
           <>
-            {file.startsWith('data:video') ? (
+            {isVideoFile ? (
               <video src={file} className="preview" autoPlay loop muted playsInline />
             ) : (
               <img src={file} className="preview" alt="Preview" />
