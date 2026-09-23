@@ -13,15 +13,16 @@ def serve_card(username: str, db: Session = Depends(get_db)):
     username = username.lower().strip()
     if "." in username or "@" in username:
         raise HTTPException(status_code=404, detail="Not found")
-    user = db.query(User).filter(User.username == username).first()
-    if not user:
+    if (user := db.query(User).filter(User.username == username).first()) is None:
         raise HTTPException(status_code=404, detail="Card not found")
-    card = (
-        db.query(Card)
-        .filter(Card.user_id == user.id, Card.published == True)  # noqa: E712
-        .order_by(Card.id.desc())
-        .first()
-    )
-    if not card or not card.html:
-        raise HTTPException(status_code=404, detail="Card not found")
-    return HTMLResponse(content=card.html)
+    else:
+        card = (
+            db.query(Card)
+            .filter(Card.user_id == user.id, Card.published == True)  # noqa: E712
+            .order_by(Card.id.desc())
+            .first()
+        )
+        if card and card.html:
+            return HTMLResponse(content=card.html)
+        else:
+            raise HTTPException(status_code=404, detail="Card not found")

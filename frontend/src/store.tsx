@@ -3,10 +3,8 @@ import { api, type CardRecord } from './api';
 import { useAuth } from './auth';
 import type { CardConfig, BrandColors, Palette, SocialLink, Portrait } from './types';
 
-const LEGACY_KEY = 'tap-card-config';
-
-function storageKey(userId: number | null): string {
-  return userId == null ? 'tap-card-config:anon' : `tap-card-config:u:${userId}`;
+function storageKey(userId: number): string {
+  return `tap-card-config:u:${userId}`;
 }
 
 const defaultColors: BrandColors = {
@@ -37,8 +35,10 @@ const defaultConfig: CardConfig = {
 };
 
 function loadLocalConfig(userId: number | null): CardConfig {
+  if (userId == null) return { ...defaultConfig };
   try {
-    localStorage.removeItem(LEGACY_KEY);
+    localStorage.removeItem('tap-card-config');
+    localStorage.removeItem('tap-card-config:anon');
     const raw = localStorage.getItem(storageKey(userId));
     if (!raw) return { ...defaultConfig };
     const parsed = JSON.parse(raw);
@@ -49,12 +49,14 @@ function loadLocalConfig(userId: number | null): CardConfig {
 }
 
 function saveLocalConfig(config: CardConfig, userId: number | null) {
+  if (userId == null) return;
   try {
     localStorage.setItem(storageKey(userId), JSON.stringify(config));
   } catch { /* quota exceeded or private mode */ }
 }
 
 function clearLocalConfig(userId: number | null) {
+  if (userId == null) return;
   try {
     localStorage.removeItem(storageKey(userId));
   } catch { /* ignore */ }
@@ -127,11 +129,6 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
     // Logout: drop that user's local draft (server autosave is the source of truth)
     if (prev !== undefined && prev !== null && userId === null) {
       clearLocalConfig(prev);
-    }
-
-    // Login/signup from anonymous: clean slate — never migrate anon draft into an account
-    if (userId !== null && prev === null) {
-      clearLocalConfig(null);
     }
 
     prevUserId.current = userId;

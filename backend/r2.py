@@ -21,9 +21,10 @@ def _r2_configured() -> bool:
 
 def upload_bytes(data: bytes, key: str, content_type: str) -> str:
     """Upload to R2 if configured, otherwise save locally. Returns public URL."""
-    if _r2_configured():
+    if not _r2_configured():
+        return _upload_local(data, key)
+    else:
         return _upload_r2(data, key, content_type)
-    return _upload_local(data, key)
 
 
 def _upload_r2(data: bytes, key: str, content_type: str) -> str:
@@ -45,9 +46,10 @@ def _upload_r2(data: bytes, key: str, content_type: str) -> str:
         Body=data,
         ContentType=content_type,
     )
-    if settings.r2_public_url:
+    if not settings.r2_public_url:
+        return f"{endpoint}/{settings.r2_bucket}/{key}"
+    else:
         return f"{settings.r2_public_url.rstrip('/')}/{key}"
-    return f"{endpoint}/{settings.r2_bucket}/{key}"
 
 
 def _upload_local(data: bytes, key: str) -> str:
@@ -61,6 +63,7 @@ def local_file_url(filename: str) -> str | None:
     """Resolve a local uploads filename to a filesystem path (for serving)."""
     safe = os.path.basename(filename)
     path = UPLOADS_DIR / safe
-    if path.is_file():
+    if not path.is_file():
+        return None
+    else:
         return str(path)
-    return None

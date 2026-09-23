@@ -56,8 +56,8 @@ def username_available(u: str, db: Session = Depends(get_db)):
     username = u.lower().strip()
     if not USERNAME_RE.match(username) or username in RESERVED_USERNAMES:
         return UsernameAvailable(available=False)
-    taken = db.query(User).filter(User.username == username).first() is not None
-    return UsernameAvailable(available=not taken)
+    else:
+        return UsernameAvailable(available=db.query(User).filter(User.username == username).first() is None)
 
 
 @router.get("", response_model=list[CardOut])
@@ -116,9 +116,10 @@ def delete_card(card_id: int, user: User = Depends(get_current_user), db: Sessio
 
 def _get_own_card(card_id: int, user: User, db: Session) -> Card:
     card = db.get(Card, card_id)
-    if not card or card.user_id != user.id:
+    if card is None or card.user_id != user.id:
         raise HTTPException(status_code=404, detail="Card not found")
-    return card
+    else:
+        return card
 
 
 def _validate_json(config: str) -> None:

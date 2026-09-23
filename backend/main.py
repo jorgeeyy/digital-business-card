@@ -27,12 +27,13 @@ app.include_router(media.router)
 @app.get("/uploads/{filename}")
 def serve_upload(filename: str):
     path = local_file_url(filename)
-    if not path:
+    if path:
+        return FileResponse(
+            path,
+            headers={"Cache-Control": "public, max-age=31536000, immutable"},
+        )
+    else:
         return JSONResponse(status_code=404, content={"detail": "Not found"})
-    return FileResponse(
-        path,
-        headers={"Cache-Control": "public, max-age=31536000, immutable"},
-    )
 
 
 @app.get("/api/health")

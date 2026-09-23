@@ -33,16 +33,15 @@ async def upload_media(
     content_type = (file.content_type or "").lower()
     if content_type not in ALLOWED_TYPES:
         raise HTTPException(status_code=400, detail=f"Unsupported file type: {content_type}")
-
-    data = await file.read()
-    if len(data) > MAX_SIZE:
-        raise HTTPException(status_code=400, detail="File too large (max 25MB)")
-    if not data:
-        raise HTTPException(status_code=400, detail="Empty file")
-
-    ext = ALLOWED_TYPES[content_type]
-    safe_name = re.sub(r"[^a-z0-9_-]", "", (file.filename or "file").rsplit(".", 1)[0].lower())[:40]
-    key = f"user-{user.id}/{uuid.uuid4().hex[:12]}-{safe_name}.{ext}"
-
-    url = upload_bytes(data, key, content_type)
-    return UploadResponse(url=url)
+    else:
+        data = await file.read()
+        if len(data) > MAX_SIZE:
+            raise HTTPException(status_code=400, detail="File too large (max 25MB)")
+        elif not data:
+            raise HTTPException(status_code=400, detail="Empty file")
+        else:
+            ext = ALLOWED_TYPES[content_type]
+            safe_name = re.sub(r"[^a-z0-9_-]", "", (file.filename or "file").rsplit(".", 1)[0].lower())[:40]
+            key = f"user-{user.id}/{uuid.uuid4().hex[:12]}-{safe_name}.{ext}"
+            url = upload_bytes(data, key, content_type)
+            return UploadResponse(url=url)

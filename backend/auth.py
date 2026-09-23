@@ -47,15 +47,14 @@ def clear_session_cookie(response: Response) -> None:
 
 
 def get_current_user(request: Request, db: Session = Depends(get_db)) -> User:
-    token = request.cookies.get(COOKIE_NAME)
-    if not token:
+    if (token := request.cookies.get(COOKIE_NAME)) is None:
         raise HTTPException(status_code=401, detail="Not authenticated")
     try:
         payload = jwt.decode(token, settings.secret_key, algorithms=[ALGORITHM])
         user_id = int(payload.get("sub"))
     except (JWTError, ValueError, TypeError):
         raise HTTPException(status_code=401, detail="Invalid or expired session")
-    user = db.get(User, user_id)
-    if not user:
+    if (user := db.get(User, user_id)) is None:
         raise HTTPException(status_code=401, detail="User not found")
-    return user
+    else:
+        return user

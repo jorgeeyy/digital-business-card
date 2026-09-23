@@ -28,29 +28,33 @@ class UsernameRequest(BaseModel):
 @router.post("/signup", response_model=UserOut)
 def signup(body: SignupRequest, response: Response, db: Session = Depends(get_db)):
     email = body.email.lower().strip()
-    existing = db.query(User).filter(User.email == email).first()
-    if existing:
+    if existing := db.query(User).filter(User.email == email).first():
         raise HTTPException(status_code=400, detail="An account with this email already exists")
-    user = User(
-        email=email,
-        password_hash=hash_password(body.password),
-        display_name=email.split("@")[0],
-    )
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-    set_session_cookie(response, user.id)
-    return user
+    else:
+        user = User(
+            email=email,
+            password_hash=hash_password(body.password),
+            display_name=email.split("@")[0],
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+        set_session_cookie(response, user.id)
+        return user
 
 
 @router.post("/login", response_model=UserOut)
 def login(body: LoginRequest, response: Response, db: Session = Depends(get_db)):
     email = body.email.lower().strip()
-    user = db.query(User).filter(User.email == email).first()
-    if not user or not user.password_hash or not verify_password(body.password, user.password_hash):
+    if (
+        (user := db.query(User).filter(User.email == email).first()) is None
+        or not user.password_hash
+        or not verify_password(body.password, user.password_hash)
+    ):
         raise HTTPException(status_code=401, detail="Invalid email or password")
-    set_session_cookie(response, user.id)
-    return user
+    else:
+        set_session_cookie(response, user.id)
+        return user
 
 
 @router.post("/logout")
@@ -133,10 +137,8 @@ def google_callback(code: str, response: Response = None, db: Session = Depends(
     if not email or not email_verified:
         raise HTTPException(status_code=400, detail="Google account email is not verified")
 
-    user = db.query(User).filter(User.google_id == google_id).first()
-    if not user:
-        user = db.query(User).filter(User.email == email).first()
-        if user:
+    if (user := db.query(User).filter(User.google_id == google_id).first()) is None:
+        if (user := db.query(User).filter(User.email == email).first()) is not None:
             user.google_id = google_id
         else:
             user = User(email=email, google_id=google_id, display_name=name or email.split("@")[0])
