@@ -141,8 +141,8 @@ export default function Landing() {
         <div className="auth-nav-right">
           <ThemeToggle />
           {loading ? null : user ? (
-            <Link className="btn btn-small btn-vercel" to="/dashboard">
-              Dashboard
+            <Link className="btn btn-small btn-vercel" to="/editor">
+              Open editor
             </Link>
           ) : (
             <>

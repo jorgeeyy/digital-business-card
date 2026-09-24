@@ -24,13 +24,10 @@ export default function AppShell({ children, actions, showAccount = true }: AppS
     <div className="editor-page">
       <header className="app-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: 20, minWidth: 0 }}>
-          <Link className="brand" to="/dashboard">
+          <Link className="brand" to="/editor">
             Tap<span>Card</span>
           </Link>
           <nav style={{ display: 'flex', gap: 14 }} aria-label="Primary">
-            <Link className="auth-nav-link" to="/dashboard">
-              Dashboard
-            </Link>
             <Link className="auth-nav-link" to="/editor">
               Editor
             </Link>

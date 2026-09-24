@@ -5,7 +5,6 @@ import { ThemeProvider } from './theme';
 import Landing from './pages/Landing';
 import Auth from './pages/Auth';
 import Editor from './pages/Editor';
-import Dashboard from './pages/Dashboard';
 import './styles/tokens.css';
 import './styles/base.css';
 import './styles/components.css';
@@ -33,10 +32,7 @@ export default function App() {
                 path="/editor"
                 element={<RequireAuth><Editor /></RequireAuth>}
               />
-              <Route
-                path="/dashboard"
-                element={<RequireAuth><Dashboard /></RequireAuth>}
-              />
+              <Route path="/dashboard" element={<Navigate to="/editor" replace />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </BrowserRouter>

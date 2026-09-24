@@ -83,7 +83,7 @@ export default function Auth() {
     }
     if (user) {
       if (!user.username) goMode('claim');
-      else navigate('/dashboard', { replace: true });
+      else navigate('/editor', { replace: true });
     }
   }, [user, authLoading, mode, navigate, goMode]);
 
@@ -120,7 +120,7 @@ export default function Auth() {
     setBusy(true);
     try {
       await login(loginEmail, loginPassword);
-      navigate('/dashboard', { replace: true });
+      navigate('/editor', { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
     } finally {

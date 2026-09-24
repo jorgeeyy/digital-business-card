@@ -4,7 +4,7 @@ import ThemeToggle from './ThemeToggle';
 
 interface AuthLayoutProps {
   children: ReactNode;
-  /** Extra right-side nav content (e.g. Dashboard link when signed in) */
+  /** Extra right-side nav content */
   right?: ReactNode;
 }
 
