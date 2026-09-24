@@ -457,7 +457,6 @@ export default function Auth() {
               </>
             )}
           </div>
-          <div className="split-aside-grid" aria-hidden="true" />
         </aside>
       </div>
     </AuthLayout>

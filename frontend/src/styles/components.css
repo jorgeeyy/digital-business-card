@@ -321,6 +321,11 @@
   flex-direction: column;
 }
 
+.auth-page > *:not(.auth-nav) {
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
 .auth-nav {
   display: flex;
   align-items: center;
@@ -433,12 +438,12 @@
   display: grid;
   grid-template-columns: minmax(320px, 440px) 1fr;
   gap: 48px;
-  align-items: stretch;
+  align-items: center;
   width: 100%;
   max-width: 1040px;
-  margin: 8px auto 48px;
+  margin-left: auto;
+  margin-right: auto;
   padding: 0 24px;
-  min-height: min(560px, calc(100svh - 140px));
 }
 
 .split-form-col {
@@ -526,24 +531,10 @@
 .split-aside {
   position: relative;
   overflow: hidden;
-  border-radius: var(--r-lg);
-  border: 1px solid var(--line);
-  background: var(--surface-2);
+  background: transparent;
   display: flex;
   align-items: center;
   padding: 48px 44px;
-}
-
-.split-aside-grid {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(to right, var(--line-soft) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--line-soft) 1px, transparent 1px);
-  background-size: 48px 48px;
-  mask-image: radial-gradient(ellipse 80% 80% at 70% 40%, #000 10%, transparent 70%);
-  -webkit-mask-image: radial-gradient(ellipse 80% 80% at 70% 40%, #000 10%, transparent 70%);
-  pointer-events: none;
 }
 
 .split-aside-inner {
@@ -615,15 +606,13 @@
   font-weight: 700;
   color: var(--text);
   background: var(--surface-3);
-  border: 1px solid var(--line);
 }
 
 .split-aside-foot {
   font-size: 13px;
   color: var(--text-faint);
   line-height: 1.5;
-  padding-top: 20px;
-  border-top: 1px solid var(--line);
+  padding-top: 4px;
 }
 
 /* Legacy single-card auth (still used by auth-card wrappers if any) */
