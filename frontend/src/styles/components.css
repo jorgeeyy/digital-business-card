@@ -437,7 +437,7 @@
 .split-auth {
   display: grid;
   grid-template-columns: minmax(320px, 440px) 1fr;
-  gap: 48px;
+  gap: 72px;
   align-items: center;
   width: 100%;
   max-width: 1040px;
