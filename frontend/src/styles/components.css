@@ -130,22 +130,6 @@
   box-shadow: var(--shadow-soft);
 }
 
-.section {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  padding: 20px;
-}
-
-.section-title {
-  font-size: var(--fs-xs);
-  font-weight: 600;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 14px;
-}
-
 /* ---------- Forms ---------- */
 .field {
   display: flex;
