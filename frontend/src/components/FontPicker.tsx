@@ -1,6 +1,15 @@
 import { useEffect } from 'react';
 import { useConfig } from '../store';
 import { fonts, fontCategories } from '../data/palettes';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from './ui/select';
 
 function ensureFontLoaded(google: string, id: string) {
   const linkId = `tap-font-${id}`;
@@ -24,28 +33,32 @@ export default function FontPicker() {
 
   return (
     <div className="font-select">
-      <select
-        aria-label="Typography"
-        value={config.font}
-        onChange={(e) => updateConfig({ font: e.target.value })}
-      >
-        {hasCustom && <option value={config.font}>Custom font</option>}
-        {fontCategories.map((cat) => {
-          const items = fonts.filter((f) => f.category === cat);
-          if (!items.length) return null;
-          return (
-            <optgroup key={cat} label={cat}>
-              {items.map((f) => (
-                <option key={f.id} value={f.value} style={f.style}>
-                  {f.label}
-                </option>
-              ))}
-            </optgroup>
-          );
-        })}
-      </select>
+      <Select value={config.font} onValueChange={(value) => updateConfig({ font: value })}>
+        <SelectTrigger className="font-select-trigger" aria-label="Typography">
+          <SelectValue placeholder="Choose a font" />
+        </SelectTrigger>
+        <SelectContent>
+          {hasCustom && <SelectItem value={config.font}>Custom font</SelectItem>}
+          {fontCategories.map((cat) => {
+            const items = fonts.filter((f) => f.category === cat);
+            if (!items.length) return null;
+            return (
+              <SelectGroup key={cat}>
+                <SelectLabel>{cat}</SelectLabel>
+                {items.map((f) => (
+                  <SelectItem key={f.id} value={f.value}>
+                    <span style={f.style}>{f.label}</span>
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            );
+          })}
+        </SelectContent>
+      </Select>
       <div className="font-select-preview" style={selected?.style}>
-        {selected ? 'The quick brown fox jumps over the lazy dog' : 'Custom font preview'}
+        {selected
+          ? 'The quick brown fox jumps over the lazy dog'
+          : 'Custom font preview'}
       </div>
     </div>
   );

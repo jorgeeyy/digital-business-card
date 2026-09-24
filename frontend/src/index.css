@@ -1,1 +1,37 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/*
+ * shadcn/ui theme mapped to the existing design tokens (tokens.css).
+ * Our app theme switches via [data-theme] on <html>, not a .dark class.
+ */
+@theme inline {
+  --color-background: var(--bg);
+  --color-foreground: var(--text);
+  --color-surface: var(--surface);
+  --color-card: var(--surface);
+  --color-card-foreground: var(--text);
+  --color-popover: var(--surface-solid);
+  --color-popover-foreground: var(--text);
+  --color-primary: var(--accent);
+  --color-primary-foreground: #ffffff;
+  --color-secondary: var(--surface-2);
+  --color-secondary-foreground: var(--text);
+  --color-muted: var(--surface-2);
+  --color-muted-foreground: var(--text-dim);
+  --color-accent: var(--surface-2);
+  --color-accent-foreground: var(--text);
+  --color-border: var(--border);
+  --color-input: var(--border);
+  --color-ring: var(--accent);
+  --color-destructive: var(--error);
+
+  --radius-sm: var(--r-sm);
+  --radius-md: 10px;
+  --radius-lg: var(--r);
+  --radius-xl: var(--r-lg);
+}
+
 /* Styles are loaded from App.tsx: tokens → base → components → pages */
