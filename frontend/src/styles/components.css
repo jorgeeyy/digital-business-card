@@ -428,95 +428,214 @@
   text-decoration: underline;
 }
 
-/* ---------- Animated auth panel ---------- */
-.auth-card-animated {
-  overflow: hidden;
-}
-
-.auth-stage {
-  position: relative;
+/* ---------- Split auth: form left | descriptions right ---------- */
+.split-auth {
+  display: grid;
+  grid-template-columns: minmax(320px, 440px) 1fr;
+  gap: 48px;
+  align-items: stretch;
   width: 100%;
+  max-width: 1040px;
+  margin: 8px auto 48px;
+  padding: 0 24px;
+  min-height: min(560px, calc(100svh - 140px));
 }
 
-.auth-panel {
-  width: 100%;
-}
-
-.auth-panel.exit-left {
-  animation: panel-exit-left 0.2s cubic-bezier(0.4, 0, 1, 1) forwards;
-}
-
-.auth-panel.exit-right {
-  animation: panel-exit-right 0.2s cubic-bezier(0.4, 0, 1, 1) forwards;
-}
-
-.auth-panel.enter-right {
-  animation: panel-enter-right 0.32s cubic-bezier(0, 0, 0.2, 1) both;
-}
-
-.auth-panel.enter-left {
-  animation: panel-enter-left 0.32s cubic-bezier(0, 0, 0.2, 1) both;
-}
-
-@keyframes panel-exit-left {
-  to {
-    opacity: 0;
-    transform: translateX(-28px) scale(0.98);
-  }
-}
-
-@keyframes panel-exit-right {
-  to {
-    opacity: 0;
-    transform: translateX(28px) scale(0.98);
-  }
-}
-
-@keyframes panel-enter-right {
-  from {
-    opacity: 0;
-    transform: translateX(28px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@keyframes panel-enter-left {
-  from {
-    opacity: 0;
-    transform: translateX(-28px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-.auth-steps {
+.split-form-col {
   display: flex;
+  flex-direction: column;
   justify-content: center;
-  gap: 8px;
-  margin-top: 22px;
+  min-width: 0;
 }
 
-.auth-step-dot {
-  width: 7px;
-  height: 7px;
+.split-form {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: 36px 32px;
+  box-shadow: var(--shadow-card);
+}
+
+.split-form h1 {
+  font-family: var(--ui);
+  font-weight: 600;
+  font-size: clamp(26px, 3.5vw, 30px);
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+
+.split-form .eyebrow {
+  margin-bottom: 10px;
+}
+
+.split-form .auth-sub {
+  font-size: 14.5px;
+  margin-bottom: 22px;
+}
+
+/* Smooth form transitions */
+.split-form.exit-left {
+  animation: form-exit-left 0.22s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+.split-form.exit-right {
+  animation: form-exit-right 0.22s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+.split-form.enter-right {
+  animation: form-enter-right 0.38s cubic-bezier(0, 0, 0.2, 1) both;
+}
+.split-form.enter-left {
+  animation: form-enter-left 0.38s cubic-bezier(0, 0, 0.2, 1) both;
+}
+
+@keyframes form-exit-left {
+  to {
+    opacity: 0;
+    transform: translateX(-32px) scale(0.985);
+  }
+}
+@keyframes form-exit-right {
+  to {
+    opacity: 0;
+    transform: translateX(32px) scale(0.985);
+  }
+}
+@keyframes form-enter-right {
+  from {
+    opacity: 0;
+    transform: translateX(32px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes form-enter-left {
+  from {
+    opacity: 0;
+    transform: translateX(-32px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Right marketing panel — stays put */
+.split-aside {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  display: flex;
+  align-items: center;
+  padding: 48px 44px;
+}
+
+.split-aside-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, var(--line-soft) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--line-soft) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 80% 80% at 70% 40%, #000 10%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 80% at 70% 40%, #000 10%, transparent 70%);
+  pointer-events: none;
+}
+
+.split-aside-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 420px;
+}
+
+.split-aside-logo {
+  font-family: var(--ui);
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  margin-bottom: 28px;
+}
+
+.split-aside-logo span {
+  font-weight: 500;
+  color: var(--text-dim);
+}
+
+.split-aside-title {
+  font-family: var(--ui);
+  font-weight: 600;
+  font-size: clamp(28px, 3.5vw, 40px);
+  letter-spacing: -0.04em;
+  line-height: 1.08;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+.split-aside-title em {
+  font-style: normal;
+  color: var(--text-dim);
+}
+
+.split-aside-desc {
+  font-size: 15px;
+  color: var(--text-dim);
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+
+.split-aside-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.split-aside-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14.5px;
+  color: var(--text);
+}
+
+.split-aside-list .check {
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  background: var(--line-strong);
-  transition: background 0.25s ease, transform 0.25s ease;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text);
+  background: var(--surface-3);
+  border: 1px solid var(--line);
 }
 
-.auth-step-dot.on {
-  background: var(--accent);
-  transform: scale(1.25);
+.split-aside-foot {
+  font-size: 13px;
+  color: var(--text-faint);
+  line-height: 1.5;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
 }
 
-.onboard-badge {
-  display: inline-flex;
-  margin-bottom: 14px;
+/* Legacy single-card auth (still used by auth-card wrappers if any) */
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  margin: 24px auto 64px;
+  padding: 36px 32px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-card);
 }
 
 /* ---------- Username field ---------- */
@@ -684,4 +803,44 @@
   font-weight: 600;
   text-decoration: underline;
   text-underline-offset: 3px;
+}
+
+/* ---------- Auth responsive ---------- */
+@media (max-width: 860px) {
+  .split-auth {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    min-height: 0;
+    margin-top: 4px;
+  }
+
+  .split-aside {
+    order: -1;
+    padding: 28px 24px;
+    min-height: 0;
+  }
+
+  .split-aside-title {
+    font-size: clamp(24px, 6vw, 30px);
+  }
+
+  .split-aside-desc {
+    margin-bottom: 18px;
+  }
+
+  .split-aside-list {
+    margin-bottom: 0;
+  }
+
+  .split-aside-foot {
+    display: none;
+  }
+
+  .split-aside-logo {
+    margin-bottom: 14px;
+  }
+
+  .split-form {
+    padding: 28px 22px;
+  }
 }

@@ -5,6 +5,7 @@ import { useAuth } from '../auth';
 import AuthLayout from '../components/AuthLayout';
 
 type Mode = 'login' | 'signup' | 'claim';
+type Phase = 'idle' | 'out-left' | 'out-right' | 'in-left' | 'in-right';
 
 const USERNAME_RE = /^[a-z0-9][a-z0-9_-]{2,29}$/;
 
@@ -18,12 +19,12 @@ const GoogleIcon = () => (
 );
 
 function initialMode(pathname: string): Mode {
-  if (pathname.includes('signup')) return 'signup';
+  if (pathname.includes('login')) return 'login';
   if (pathname.includes('onboarding')) return 'claim';
-  return 'login';
+  return 'signup';
 }
 
-const modeOrder: Mode[] = ['login', 'signup', 'claim'];
+const order: Mode[] = ['login', 'signup', 'claim'];
 
 export default function Auth() {
   const location = useLocation();
@@ -31,69 +32,62 @@ export default function Auth() {
   const { user, loading: authLoading, login, signup, refresh } = useAuth();
 
   const [mode, setMode] = useState<Mode>(() => initialMode(location.pathname));
-  const [phase, setPhase] = useState<'idle' | 'out-left' | 'out-right' | 'in-left' | 'in-right'>('idle');
+  const [phase, setPhase] = useState<Phase>('idle');
 
-  // Auth form state
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  // Login form
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  // Signup form
+  const [signupEmail, setSignupEmail] = useState('');
+  const [signupPassword, setSignupPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  // Claim username state
+  // Claim
   const [username, setUsername] = useState('');
   const [status, setStatus] = useState<'idle' | 'checking' | 'available' | 'taken' | 'invalid'>('idle');
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Keep URL in sync without remounting this component
   const syncUrl = useCallback((m: Mode) => {
     if (m === 'login' || m === 'signup') {
       window.history.replaceState(null, '', `/${m}`);
     }
   }, []);
 
-  const setModeWithAnim = useCallback(
-    (next: Mode, direction: 1 | -1) => {
-      if (next === mode) return;
+  const goMode = useCallback(
+    (next: Mode) => {
+      if (next === mode || phase !== 'idle') return;
+      const dir: 1 | -1 = order.indexOf(next) >= order.indexOf(mode) ? 1 : -1;
       setError(null);
-      setPhase(direction === 1 ? 'out-left' : 'out-right');
+      setPhase(dir === 1 ? 'out-left' : 'out-right');
       window.setTimeout(() => {
         setMode(next);
         syncUrl(next);
-        setPhase(direction === 1 ? 'in-right' : 'in-left');
-        window.setTimeout(() => setPhase('idle'), 320);
-      }, 200);
+        setPhase(dir === 1 ? 'in-right' : 'in-left');
+        window.setTimeout(() => setPhase('idle'), 380);
+      }, 220);
     },
-    [mode, syncUrl],
+    [mode, phase, syncUrl],
   );
 
-  function goMode(next: Mode) {
-    const from = modeOrder.indexOf(mode);
-    const to = modeOrder.indexOf(next);
-    if (to < 0) return;
-    const dir: 1 | -1 = to >= from ? 1 : -1;
-    setModeWithAnim(next, dir);
-  }
-
-  // Redirects based on auth state
+  // Redirects
   useEffect(() => {
     if (authLoading) return;
     if (mode === 'claim') {
       if (!user) {
-        setModeWithAnim('login', -1);
+        goMode('login');
         return;
       }
-      if (user.username) {
-        navigate('/editor', { replace: true });
-      }
+      if (user.username) navigate('/editor', { replace: true });
       return;
     }
     if (user) {
-      if (!user.username) setModeWithAnim('claim', 1);
+      if (!user.username) goMode('claim');
       else navigate('/dashboard', { replace: true });
     }
-  }, [user, authLoading, mode, navigate, setModeWithAnim]);
+  }, [user, authLoading, mode, navigate, goMode]);
 
-  // Username availability debounce
+  // Username availability
   useEffect(() => {
     if (mode !== 'claim') return;
     if (timer.current) clearTimeout(timer.current);
@@ -125,7 +119,7 @@ export default function Auth() {
     setError(null);
     setBusy(true);
     try {
-      await login(email, password);
+      await login(loginEmail, loginPassword);
       navigate('/dashboard', { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
@@ -137,13 +131,13 @@ export default function Auth() {
   const submitSignup = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
-    if (password.length < 8) {
+    if (signupPassword.length < 8) {
       setError('Password must be at least 8 characters');
       return;
     }
     setBusy(true);
     try {
-      await signup(email, password);
+      await signup(signupEmail, signupPassword);
       await refresh();
       goMode('claim');
     } catch (err) {
@@ -187,16 +181,16 @@ export default function Auth() {
   const fieldClass =
     `username-field${status === 'available' ? ' valid' : ''}${status === 'taken' || status === 'invalid' ? ' invalid' : ''}`;
 
-  const panelClass =
+  const formPhaseClass =
     phase === 'out-left'
-      ? 'auth-panel exit-left'
+      ? 'exit-left'
       : phase === 'out-right'
-        ? 'auth-panel exit-right'
+        ? 'exit-right'
         : phase === 'in-right'
-          ? 'auth-panel enter-right'
+          ? 'enter-right'
           : phase === 'in-left'
-            ? 'auth-panel enter-left'
-            : 'auth-panel';
+            ? 'enter-left'
+            : '';
 
   if (authLoading) {
     return (
@@ -208,88 +202,30 @@ export default function Auth() {
 
   return (
     <AuthLayout>
-      <div className="auth-card auth-card-animated">
-        <div className="auth-stage">
-          <div className={panelClass} key={mode}>
-            {mode === 'login' && (
-              <>
-                <div className="eyebrow" style={{ marginBottom: 12 }}>
-                  Welcome back
-                </div>
-                <h1>Log in to your card</h1>
-                <p className="auth-sub">Edit, publish, and share your digital business card.</p>
-
-                <a className="btn btn-google" href="/api/auth/google">
-                  <GoogleIcon />
-                  Continue with Google
-                </a>
-
-                <div className="auth-divider">
-                  <span>or</span>
-                </div>
-
-                <form onSubmit={submitLogin} className="auth-form">
-                  <label>
-                    Email
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="you@example.com"
-                      required
-                      autoComplete="email"
-                    />
-                  </label>
-                  <label>
-                    Password
-                    <input
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••"
-                      required
-                      autoComplete="current-password"
-                    />
-                  </label>
-                  {error && <div className="form-error">{error}</div>}
-                  <button className="btn btn-full" type="submit" disabled={busy}>
-                    {busy ? 'Logging in…' : 'Log in'}
-                  </button>
-                </form>
-
-                <p className="auth-switch">
-                  No account?{' '}
-                  <button type="button" className="auth-link-btn" onClick={() => goMode('signup')}>
-                    Sign up free
-                  </button>
-                </p>
-              </>
-            )}
-
+      <div className="split-auth">
+        {/* Left: form panel */}
+        <div className="split-form-col">
+          <div className={`split-form ${formPhaseClass}`} key={mode}>
             {mode === 'signup' && (
               <>
-                <div className="eyebrow" style={{ marginBottom: 12 }}>
-                  Free forever
-                </div>
+                <div className="eyebrow">Free forever</div>
                 <h1>Create your account</h1>
-                <p className="auth-sub">Claim your link and build a card worth sharing — in minutes.</p>
+                <p className="auth-sub">Claim your link and build a card worth sharing.</p>
 
                 <a className="btn btn-google" href="/api/auth/google">
                   <GoogleIcon />
                   Continue with Google
                 </a>
 
-                <div className="auth-divider">
-                  <span>or</span>
-                </div>
+                <div className="auth-divider"><span>or</span></div>
 
                 <form onSubmit={submitSignup} className="auth-form">
                   <label>
                     Email
                     <input
                       type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      value={signupEmail}
+                      onChange={(e) => setSignupEmail(e.target.value)}
                       placeholder="you@example.com"
                       required
                       autoComplete="email"
@@ -299,8 +235,8 @@ export default function Auth() {
                     Password
                     <input
                       type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      value={signupPassword}
+                      onChange={(e) => setSignupPassword(e.target.value)}
                       placeholder="At least 8 characters"
                       required
                       autoComplete="new-password"
@@ -322,11 +258,60 @@ export default function Auth() {
               </>
             )}
 
+            {mode === 'login' && (
+              <>
+                <div className="eyebrow">Welcome back</div>
+                <h1>Log in to your card</h1>
+                <p className="auth-sub">Edit, publish, and share your digital business card.</p>
+
+                <a className="btn btn-google" href="/api/auth/google">
+                  <GoogleIcon />
+                  Continue with Google
+                </a>
+
+                <div className="auth-divider"><span>or</span></div>
+
+                <form onSubmit={submitLogin} className="auth-form">
+                  <label>
+                    Email
+                    <input
+                      type="email"
+                      value={loginEmail}
+                      onChange={(e) => setLoginEmail(e.target.value)}
+                      placeholder="you@example.com"
+                      required
+                      autoComplete="email"
+                    />
+                  </label>
+                  <label>
+                    Password
+                    <input
+                      type="password"
+                      value={loginPassword}
+                      onChange={(e) => setLoginPassword(e.target.value)}
+                      placeholder="••••••••"
+                      required
+                      autoComplete="current-password"
+                    />
+                  </label>
+                  {error && <div className="form-error">{error}</div>}
+                  <button className="btn btn-full" type="submit" disabled={busy}>
+                    {busy ? 'Logging in…' : 'Log in'}
+                  </button>
+                </form>
+
+                <p className="auth-switch">
+                  No account?{' '}
+                  <button type="button" className="auth-link-btn" onClick={() => goMode('signup')}>
+                    Sign up free
+                  </button>
+                </p>
+              </>
+            )}
+
             {mode === 'claim' && (
               <>
-                <div className="onboard-badge">
-                  <span className="chip chip-draft">Step 1 of 2 · Claim link</span>
-                </div>
+                <div className="eyebrow">Step 2 of 2</div>
                 <h1>Claim your link</h1>
                 <p className="auth-sub">
                   Pick the username for your public card — this is the link you&apos;ll share everywhere.
@@ -358,19 +343,122 @@ export default function Auth() {
                 </form>
 
                 <p className="auth-switch">
-                  Next you&apos;ll build your card in the editor. Step 2 of 2.
+                  Next you&apos;ll build your card in the editor.
                 </p>
               </>
             )}
           </div>
         </div>
 
-        {/* Step indicator dots */}
-        <div className="auth-steps" aria-hidden="true">
-          {modeOrder.map((m) => (
-            <span key={m} className={`auth-step-dot${mode === m || (mode === 'claim' && m === 'claim') ? ' on' : ''}${m === 'claim' && mode !== 'claim' ? '' : ''}`} />
-          ))}
-        </div>
+        {/* Right: marketing / descriptions — differs by mode */}
+        <aside className="split-aside" aria-hidden="true">
+          <div className="split-aside-inner">
+            <div className="split-aside-logo">Tap<span>Card</span></div>
+
+            {mode === 'signup' && (
+              <>
+                <h2 className="split-aside-title">
+                  Claim your link.
+                  <br />
+                  <em>Build your card.</em>
+                </h2>
+                <p className="split-aside-desc">
+                  Sign up free and get a shareable digital business card in minutes — no design skills needed.
+                </p>
+                <ul className="split-aside-list">
+                  <li>
+                    <span className="check" aria-hidden="true">✓</span>
+                    Unique username link
+                  </li>
+                  <li>
+                    <span className="check" aria-hidden="true">✓</span>
+                    Live preview while you edit
+                  </li>
+                  <li>
+                    <span className="check" aria-hidden="true">✓</span>
+                    vCard download for contacts
+                  </li>
+                  <li>
+                    <span className="check" aria-hidden="true">✓</span>
+                    QR &amp; NFC ready
+                  </li>
+                </ul>
+                <div className="split-aside-foot">
+                  Free forever. Upgrade only if you need to.
+                </div>
+              </>
+            )}
+
+            {mode === 'login' && (
+              <>
+                <h2 className="split-aside-title">
+                  Welcome back.
+                  <br />
+                  <em>Pick up where you left off.</em>
+                </h2>
+                <p className="split-aside-desc">
+                  Log in to edit your card, update links, and keep your public profile fresh.
+                </p>
+                <ul className="split-aside-list">
+                  <li>
+                    <span className="check" aria-hidden="true">✓</span>
+                    Edit and republish instantly
+                  </li>
+                  <li>
+                    <span className="check" aria-hidden="true">✓</span>
+                    Update socials anytime
+                  </li>
+                  <li>
+                    <span className="check" aria-hidden="true">✓</span>
+                    Manage your claim status
+                  </li>
+                  <li>
+                    <span className="check" aria-hidden="true">✓</span>
+                    Same link — always current
+                  </li>
+                </ul>
+                <div className="split-aside-foot">
+                  No account yet? Sign up takes under a minute.
+                </div>
+              </>
+            )}
+
+            {mode === 'claim' && (
+              <>
+                <h2 className="split-aside-title">
+                  One last step.
+                  <br />
+                  <em>Your link is waiting.</em>
+                </h2>
+                <p className="split-aside-desc">
+                  Choose the username people will type — or scan — to reach your card.
+                </p>
+                <ul className="split-aside-list">
+                  <li>
+                    <span className="check" aria-hidden="true">✓</span>
+                    Lowercase, numbers, - and _
+                  </li>
+                  <li>
+                    <span className="check" aria-hidden="true">✓</span>
+                    3–30 characters
+                  </li>
+                  <li>
+                    <span className="check" aria-hidden="true">✓</span>
+                    Available check in real time
+                  </li>
+                  <li>
+                    <span className="check" aria-hidden="true">✓</span>
+                    Editable later in settings
+                  </li>
+                </ul>
+                <div className="split-aside-foot">
+                  After claiming, you&apos;ll land in the card editor.
+                </div>
+              </>
+            )}
+          </div>
+          <div className="split-aside-grid" aria-hidden="true" />
+        </aside>
       </div>
     </AuthLayout>
   );
