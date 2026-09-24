@@ -31,17 +31,6 @@ const TABS = [
     ),
   },
   {
-    id: 'typography',
-    label: 'Typography',
-    icon: (
-      <svg {...iconProps}>
-        <path d="M4 7V4h16v3" />
-        <path d="M12 4v16" />
-        <path d="M8 20h8" />
-      </svg>
-    ),
-  },
-  {
     id: 'layout',
     label: 'Layout',
     icon: (
@@ -128,8 +117,13 @@ export default function Configurator() {
         aria-labelledby={`cfg-tab-${active}`}
         key={active}
       >
-        {active === 'brand' && <BrandPicker />}
-        {active === 'typography' && <FontPicker />}
+        {active === 'brand' && (
+          <>
+            <BrandPicker />
+            <div className="cfg-subhead">Typography</div>
+            <FontPicker />
+          </>
+        )}
         {active === 'layout' && <LayoutPicker />}
         {active === 'contact' && (
           <>

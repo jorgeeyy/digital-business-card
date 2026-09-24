@@ -543,6 +543,17 @@
   animation: cfg-swap 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+.cfg-subhead {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin: 18px 0 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line-soft);
+}
+
 @keyframes cfg-swap {
   from {
     opacity: 0;
