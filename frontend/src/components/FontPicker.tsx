@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useConfig } from '../store';
-import { fonts, fontCategories } from '../data/palettes';
+import { fonts, fontCategories } from '../data/fonts';
 import {
   Select,
   SelectContent,

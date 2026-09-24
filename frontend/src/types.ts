@@ -9,12 +9,6 @@ export interface BrandColors {
   cardBg: string;
 }
 
-export interface Palette {
-  id: string;
-  name: string;
-  colors: BrandColors;
-}
-
 export type FontCategory = 'Serif' | 'Sans' | 'Display' | 'Handwriting' | 'Mono';
 
 export interface FontOption {
@@ -41,7 +35,6 @@ export interface Portrait {
 export type Layout = 'classic' | 'compact' | 'bold';
 
 export interface CardConfig {
-  paletteId: string;
   colors: BrandColors;
   font: string;
   layout: Layout;

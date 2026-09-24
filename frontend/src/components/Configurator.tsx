@@ -119,6 +119,7 @@ export default function Configurator() {
       >
         {active === 'brand' && (
           <>
+            <div className="cfg-subhead">Colors</div>
             <BrandPicker />
             <div className="cfg-subhead">Typography</div>
             <FontPicker />

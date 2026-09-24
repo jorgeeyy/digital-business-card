@@ -1,5 +1,5 @@
 import type { CardConfig } from '../types';
-import { fonts } from '../data/palettes';
+import { fonts } from '../data/fonts';
 import { absoluteCardUrl } from '../api';
 import { generateQrSvg } from './qr';
 

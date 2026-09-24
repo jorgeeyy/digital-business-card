@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useCallback, useEffect, useRef, type ReactNode } from 'react';
 import { api, type CardRecord } from './api';
 import { useAuth } from './auth';
-import type { CardConfig, BrandColors, Palette, SocialLink, Portrait } from './types';
+import type { CardConfig, BrandColors, SocialLink, Portrait } from './types';
 
 function storageKey(userId: number): string {
   return `tap-card-config:u:${userId}`;
@@ -19,7 +19,6 @@ const defaultColors: BrandColors = {
 };
 
 const defaultConfig: CardConfig = {
-  paletteId: 'midnight-teal',
   colors: { ...defaultColors },
   font: 'Georgia, "Times New Roman", serif',
   layout: 'classic',
@@ -67,7 +66,6 @@ interface ConfigContextType {
   config: CardConfig;
   updateConfig: (patch: Partial<CardConfig>) => void;
   updateColors: (colorPatch: Partial<BrandColors>) => void;
-  setPalette: (palette: Palette) => void;
   addSocial: () => void;
   updateSocial: (index: number, field: keyof SocialLink, value: string) => void;
   removeSocial: (index: number) => void;
@@ -221,16 +219,7 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
   const updateColors = useCallback((colorPatch: Partial<BrandColors>) => {
     setConfig((prev) => ({
       ...prev,
-      paletteId: 'custom',
       colors: { ...prev.colors, ...colorPatch },
-    }));
-  }, []);
-
-  const setPalette = useCallback((palette: Palette) => {
-    setConfig((prev) => ({
-      ...prev,
-      paletteId: palette.id,
-      colors: { ...palette.colors },
     }));
   }, []);
 
@@ -269,7 +258,6 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
         config,
         updateConfig,
         updateColors,
-        setPalette,
         addSocial,
         updateSocial,
         removeSocial,
