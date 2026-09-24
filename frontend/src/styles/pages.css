@@ -591,16 +591,6 @@
   color: var(--accent);
 }
 
-.preview-stage {
-  width: 100%;
-  display: grid;
-  place-items: center;
-  padding: 28px 16px;
-  border-radius: var(--r-lg);
-  border: 1px solid var(--line);
-  background: var(--surface-2);
-}
-
 .preview-frame {
   position: relative;
   width: 100%;
