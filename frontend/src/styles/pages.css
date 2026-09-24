@@ -848,12 +848,6 @@
 }
 
 /* Upload zones */
-.upload-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
 .upload-zone {
   display: flex;
   flex-direction: column;
@@ -958,9 +952,6 @@
   }
   .color-row {
     grid-template-columns: repeat(2, 1fr);
-  }
-  .upload-row {
-    grid-template-columns: 1fr;
   }
   .app-header {
     padding: 0 12px;

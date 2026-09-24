@@ -88,3 +88,10 @@ export function publicCardUrl(username: string): string {
   }
   return `/${username}`;
 }
+
+export function absoluteCardUrl(username: string): string {
+  if (import.meta.env.DEV) {
+    return `http://localhost:8000/${username}`;
+  }
+  return `${window.location.origin}/${username}`;
+}

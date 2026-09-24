@@ -31,7 +31,6 @@ const defaultConfig: CardConfig = {
   website: '',
   socials: [],
   portrait: null,
-  qr: null,
 };
 
 function loadLocalConfig(userId: number | null): CardConfig {
@@ -73,7 +72,6 @@ interface ConfigContextType {
   updateSocial: (index: number, field: keyof SocialLink, value: string) => void;
   removeSocial: (index: number) => void;
   setPortrait: (portrait: Portrait | null) => void;
-  setQr: (qr: string | null) => void;
   card: CardRecord | null;
   cardLoading: boolean;
   saveStatus: SaveStatus;
@@ -265,10 +263,6 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
     setConfig((prev) => ({ ...prev, portrait }));
   }, []);
 
-  const setQr = useCallback((qr: string | null) => {
-    setConfig((prev) => ({ ...prev, qr }));
-  }, []);
-
   return (
     <ConfigContext.Provider
       value={{
@@ -280,7 +274,6 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
         updateSocial,
         removeSocial,
         setPortrait,
-        setQr,
         card,
         cardLoading,
         saveStatus,

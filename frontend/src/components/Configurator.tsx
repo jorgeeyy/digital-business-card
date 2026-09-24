@@ -77,7 +77,7 @@ const TABS = [
 type TabId = (typeof TABS)[number]['id'];
 
 export default function Configurator() {
-  const { config, updateConfig, setPortrait, setQr } = useConfig();
+  const { config, updateConfig, setPortrait } = useConfig();
   const [active, setActive] = useState<TabId>('brand');
 
   return (
@@ -191,22 +191,19 @@ export default function Configurator() {
         )}
         {active === 'socials' && <SocialRows />}
         {active === 'media' && (
-          <div className="upload-row">
-            <UploadZone
-              label="Portrait"
-              file={config.portrait?.dataUrl || null}
-              isVideoFile={config.portrait?.type === 'video'}
-              onFile={(url, isVideo) => {
-                if (!url) {
-                  setPortrait(null);
-                } else {
-                  setPortrait({ type: isVideo ? 'video' : 'image', dataUrl: url });
-                }
-              }}
-              isPortrait
-            />
-            <UploadZone label="QR code" file={config.qr || null} onFile={setQr} />
-          </div>
+          <UploadZone
+            label="Portrait"
+            file={config.portrait?.dataUrl || null}
+            isVideoFile={config.portrait?.type === 'video'}
+            onFile={(url, isVideo) => {
+              if (!url) {
+                setPortrait(null);
+              } else {
+                setPortrait({ type: isVideo ? 'video' : 'image', dataUrl: url });
+              }
+            }}
+            isPortrait
+          />
         )}
       </div>
     </div>

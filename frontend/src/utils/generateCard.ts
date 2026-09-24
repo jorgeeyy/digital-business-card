@@ -1,5 +1,7 @@
 import type { CardConfig } from '../types';
 import { fonts } from '../data/palettes';
+import { absoluteCardUrl } from '../api';
+import { generateQrSvg } from './qr';
 
 function escHtml(s: string): string {
   return (s || '')
@@ -41,8 +43,8 @@ function socialIcon(platform: string): string {
   return icons[platform] || '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>';
 }
 
-export function generateCardHtml(config: CardConfig): string {
-  const { colors, font, layout, name, role, location, phone, email, website, socials, portrait, qr } = config;
+export function generateCardHtml(config: CardConfig, username?: string | null): string {
+  const { colors, font, layout, name, role, location, phone, email, website, socials, portrait } = config;
 
   const initials = name
     ? name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2)
@@ -89,9 +91,10 @@ export function generateCardHtml(config: CardConfig): string {
     </a>`;
   });
 
-  const qrModalHtml = qr
-    ? `<div id="qrModal"><div class="sheet"><h3>Scan to connect</h3><p class="qr-url"></p><div class="qrbox"><img src="${qr}" style="width:100%;border-radius:10px;" /></div><button class="close" onclick="document.getElementById('qrModal')?.classList.remove('show')" type="button">Done</button></div></div>`
-    : `<div id="qrModal"><div class="sheet"><h3>Scan to connect</h3><p style="font-size:12px;color:#4b6b68;">No QR code uploaded</p><button class="close" onclick="document.getElementById('qrModal')?.classList.remove('show')" type="button">Done</button></div></div>`;
+  const cardUrl = username ? absoluteCardUrl(username) : null;
+  const qrModalHtml = cardUrl
+    ? `<div id="qrModal"><div class="sheet"><h3>Scan to connect</h3><p class="qr-url">${escHtml(cardUrl)}</p><div class="qrbox">${generateQrSvg(cardUrl)}</div><button class="close" onclick="document.getElementById('qrModal')?.classList.remove('show')" type="button">Done</button></div></div>`
+    : `<div id="qrModal"><div class="sheet"><h3>Scan to connect</h3><p style="font-size:12px;color:#4b6b68;">Publish your card to get your QR code</p><button class="close" onclick="document.getElementById('qrModal')?.classList.remove('show')" type="button">Done</button></div></div>`;
 
   const layoutStyles: Record<string, string> = {
     compact: `
@@ -184,6 +187,7 @@ ${fontStylesheet}
   #qrModal .sheet{background:var(--cream);border-radius:22px;padding:22px 22px 18px;max-width:320px;width:100%;text-align:center;box-shadow:0 30px 70px -20px rgba(0,0,0,0.7);}
   #qrModal .sheet h3{margin:0 0 4px;font-family:var(--serif);font-weight:400;font-size:20px;color:${colors.secondary};}
   #qrModal .sheet .qr-url{font-size:12px;color:#4b6b68;word-break:break-all;margin-bottom:12px;}
+  #qrModal .sheet .qrbox svg{display:block;width:100%;height:auto;border-radius:10px;background:#ffffff;}
   #qrModal .close{margin-top:14px;width:100%;border:0;border-radius:12px;cursor:pointer;padding:11px;font-family:var(--sans);font-size:13px;font-weight:650;color:var(--cream);background:var(--teal);}
   @media(prefers-reduced-motion:no-preference){.reveal{opacity:0;transform:translateY(10px);animation:rise .6s cubic-bezier(.2,.7,.2,1) forwards;}.reveal:nth-child(1){animation-delay:.02s}@keyframes rise{to{opacity:1;transform:none;}}.card::before{animation:glow 14s ease-in-out infinite alternate;}}
   :focus-visible{outline:2px solid var(--sand);outline-offset:3px;border-radius:8px;}

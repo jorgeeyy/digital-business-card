@@ -16,19 +16,20 @@ export default function Editor() {
   const [publishing, setPublishing] = useState(false);
   const [copied, setCopied] = useState(false);
   const previewTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const linkUsername = card?.username ?? user?.username ?? null;
 
   useEffect(() => {
-    const html = generateCardHtml(config);
+    const html = generateCardHtml(config, linkUsername);
     setLatestHtml(html);
     if (previewTimer.current) clearTimeout(previewTimer.current);
     previewTimer.current = setTimeout(() => setCardHtml(html), 250);
     return () => {
       if (previewTimer.current) clearTimeout(previewTimer.current);
     };
-  }, [config, setLatestHtml]);
+  }, [config, linkUsername, setLatestHtml]);
 
   const handleDownload = useCallback(() => {
-    const html = generateCardHtml(config);
+    const html = generateCardHtml(config, linkUsername);
     const blob = new Blob([html], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -36,18 +37,18 @@ export default function Editor() {
     a.download = 'tap-card.html';
     a.click();
     URL.revokeObjectURL(url);
-  }, [config]);
+  }, [config, linkUsername]);
 
   const handleSave = useCallback(async () => {
-    await saveNow(generateCardHtml(config));
-  }, [config, saveNow]);
+    await saveNow(generateCardHtml(config, linkUsername));
+  }, [config, linkUsername, saveNow]);
 
   const handlePublish = useCallback(
     async (username: string) => {
       setPublishing(true);
       setPublishError(null);
       try {
-        await publish(username, generateCardHtml(config));
+        await publish(username, generateCardHtml(config, username));
         setShowPublish(false);
       } catch (err) {
         setPublishError(err instanceof Error ? err.message : 'Publish failed');

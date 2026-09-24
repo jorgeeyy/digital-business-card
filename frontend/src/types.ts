@@ -53,7 +53,6 @@ export interface CardConfig {
   website: string;
   socials: SocialLink[];
   portrait: Portrait | null;
-  qr: string | null;
 }
 
 export const socialPlatforms = [
