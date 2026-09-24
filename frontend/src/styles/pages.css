@@ -162,6 +162,28 @@
   color: transparent;
 }
 
+.lp-caret {
+  display: inline-block;
+  width: 0.08em;
+  height: 0.85em;
+  margin-left: 0.06em;
+  background: var(--text);
+  vertical-align: -0.05em;
+  animation: lp-caret-blink 1s steps(1) infinite;
+}
+
+@keyframes lp-caret-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-caret {
+    animation: none;
+    opacity: 0;
+  }
+}
+
 .lp-sub {
   position: relative;
   z-index: 1;

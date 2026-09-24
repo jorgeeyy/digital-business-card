@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../auth';
 import ThemeToggle from '../components/ThemeToggle';
@@ -69,8 +70,62 @@ const steps = [
   { n: '03', title: 'Publish & share', desc: 'Your unique link goes live instantly.' },
 ];
 
+const typeWords = ['link', 'card'] as const;
+const TYPE_MS = 90;
+const DELETE_MS = 55;
+const HOLD_MS = 1400;
+const REST_MS = 400;
+
+function useTypewriter() {
+  const [wordIdx, setWordIdx] = useState(0);
+  const [text, setText] = useState('');
+  const [phase, setPhase] = useState<'type' | 'hold' | 'delete' | 'rest'>('type');
+
+  useEffect(() => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) {
+      const t = setTimeout(() => setText(typeWords[0]), 0);
+      return () => clearTimeout(t);
+    }
+
+    const word = typeWords[wordIdx];
+    let delay = TYPE_MS;
+    let timer: ReturnType<typeof setTimeout>;
+
+    if (phase === 'type') {
+      if (text.length < word.length) {
+        timer = setTimeout(() => setText(word.slice(0, text.length + 1)), TYPE_MS);
+        return () => clearTimeout(timer);
+      }
+      delay = HOLD_MS;
+      timer = setTimeout(() => setPhase('hold'), delay);
+    } else if (phase === 'hold') {
+      timer = setTimeout(() => setPhase('delete'), 0);
+      return () => clearTimeout(timer);
+    } else if (phase === 'delete') {
+      if (text.length > 0) {
+        timer = setTimeout(() => setText(word.slice(0, text.length - 1)), DELETE_MS);
+        return () => clearTimeout(timer);
+      }
+      timer = setTimeout(() => setPhase('rest'), REST_MS);
+      return () => clearTimeout(timer);
+    } else {
+      timer = setTimeout(() => {
+        setWordIdx((i) => (i + 1) % typeWords.length);
+        setPhase('type');
+      }, 0);
+      return () => clearTimeout(timer);
+    }
+
+    return () => clearTimeout(timer);
+  }, [phase, text, wordIdx]);
+
+  return { word: typeWords[wordIdx], text };
+}
+
 export default function Landing() {
   const { user, loading } = useAuth();
+  const { word, text } = useTypewriter();
 
   return (
     <div className="lp">
@@ -104,22 +159,19 @@ export default function Landing() {
       <main className="lp-main">
         <section className="lp-hero">
           <div className="lp-grid" aria-hidden="true" />
-          <div className="lp-glow" aria-hidden="true" />
-
-          <div className="lp-badge">
-            <span className="lp-badge-dot" aria-hidden="true" />
-            Digital business card · free to start
-          </div>
 
           <h1 className="lp-title">
-            Your link.
-            <br />
-            <span className="lp-title-accent">Your card.</span>
+            Your{' '}
+            <span className={word === 'card' ? 'lp-title-accent' : undefined}>
+              {text}
+              {text.length > 0 ? '.' : ''}
+            </span>
+            <span className="lp-caret" aria-hidden="true" />
           </h1>
 
           <p className="lp-sub">
-            A Vercel-clean digital business card you can build in minutes.
-            One link for your bio, email signature, QR code, or NFC tap.
+            A digital business card you can build in minutes.
+            One link for your bio, QR code, or NFC tap.
           </p>
 
           <div className="lp-cta">
@@ -194,7 +246,7 @@ export default function Landing() {
         <Link className="brand lp-brand" to="/">
           Tap<span>Card</span>
         </Link>
-        <p>A Linktree alternative built for real business cards.</p>
+        {/* <p>A Linktree alternative built for real business cards.</p> */}
       </footer>
     </div>
   );
