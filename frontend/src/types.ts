@@ -1,11 +1,7 @@
 export interface BrandColors {
   primary: string;
-  secondary: string;
-  secondary2: string;
   accent: string;
-  accentDeep: string;
   text: string;
-  textDim: string;
   cardBg: string;
 }
 

@@ -9,12 +9,8 @@ function storageKey(userId: number): string {
 
 const defaultColors: BrandColors = {
   primary: '#1a1404',
-  secondary: '#4a3707',
-  secondary2: '#6b5410',
   accent: '#FFD633',
-  accentDeep: '#E8B923',
   text: '#FBF3DC',
-  textDim: '#a89a7a',
   cardBg: '#0a201f',
 };
 
@@ -66,6 +62,7 @@ interface ConfigContextType {
   config: CardConfig;
   updateConfig: (patch: Partial<CardConfig>) => void;
   updateColors: (colorPatch: Partial<BrandColors>) => void;
+  resetColors: () => void;
   addSocial: () => void;
   updateSocial: (index: number, field: keyof SocialLink, value: string) => void;
   removeSocial: (index: number) => void;
@@ -223,6 +220,10 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
     }));
   }, []);
 
+  const resetColors = useCallback(() => {
+    setConfig((prev) => ({ ...prev, colors: { ...defaultColors } }));
+  }, []);
+
   const addSocial = useCallback(() => {
     setConfig((prev) => {
       if (prev.socials.length >= 6) return prev;
@@ -258,6 +259,7 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
         config,
         updateConfig,
         updateColors,
+        resetColors,
         addSocial,
         updateSocial,
         removeSocial,
