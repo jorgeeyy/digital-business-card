@@ -129,6 +129,7 @@ export default function Landing() {
 
   return (
     <div className="lp">
+      <div className="lp-grid" aria-hidden="true" />
       <nav className="lp-nav">
         <Link className="brand lp-brand" to="/">
           Tap<span>Card</span>
@@ -158,8 +159,6 @@ export default function Landing() {
 
       <main className="lp-main">
         <section className="lp-hero">
-          <div className="lp-grid" aria-hidden="true" />
-
           <h1 className="lp-title">
             Your{' '}
             <span className={word === 'card' ? 'lp-title-accent' : undefined}>
@@ -170,13 +169,13 @@ export default function Landing() {
           </h1>
 
           <p className="lp-sub">
-            A digital business card you can build in minutes.
-            One link for your bio, QR code, or NFC tap.
+            One link that becomes your digital business card — bio, QR, NFC, and contacts.
+            Live in under a minute.
           </p>
 
           <div className="lp-cta">
             <Link className="btn btn-large btn-vercel" to={user ? '/editor' : '/signup'}>
-              {user ? 'Open editor' : 'Claim your link'}
+              {user ? 'Open editor' : 'Claim your link — free'}
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M5 12h14M13 6l6 6-6 6" />
               </svg>
@@ -187,6 +186,10 @@ export default function Landing() {
               </Link>
             )}
           </div>
+
+          <p className="lp-trust">
+            Built for bios, email signatures, QR codes &amp; NFC taps
+          </p>
         </section>
 
         <section className="lp-section" id="features">
