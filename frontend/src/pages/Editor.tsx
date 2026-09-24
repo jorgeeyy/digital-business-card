@@ -8,7 +8,7 @@ import CardPreview from '../components/CardPreview';
 import AppShell from '../components/AppShell';
 
 export default function Editor() {
-  const { config, card, saveStatus, setLatestHtml, saveNow, publish } = useConfig();
+  const { config, card, setLatestHtml, saveNow, publish } = useConfig();
   const { user } = useAuth();
   const [cardHtml, setCardHtml] = useState<string | null>(null);
   const [showPublish, setShowPublish] = useState(false);
@@ -27,17 +27,6 @@ export default function Editor() {
       if (previewTimer.current) clearTimeout(previewTimer.current);
     };
   }, [config, linkUsername, setLatestHtml]);
-
-  const handleDownload = useCallback(() => {
-    const html = generateCardHtml(config, linkUsername);
-    const blob = new Blob([html], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'tap-card.html';
-    a.click();
-    URL.revokeObjectURL(url);
-  }, [config, linkUsername]);
 
   const handleSave = useCallback(async () => {
     await saveNow(generateCardHtml(config, linkUsername));
@@ -70,25 +59,10 @@ export default function Editor() {
     }
   }, [card]);
 
-  const statusLabel =
-    saveStatus === 'saving'
-      ? 'Saving…'
-      : saveStatus === 'saved'
-        ? 'Saved'
-        : saveStatus === 'error'
-          ? 'Save failed'
-          : '';
-
   const actions = (
     <>
-      <span className={`save-indicator ${saveStatus}`} aria-live="polite">
-        {statusLabel}
-      </span>
       <button className="btn btn-small btn-ghost" onClick={handleSave}>
         Save
-      </button>
-      <button className="btn btn-small btn-ghost" onClick={handleDownload}>
-        Download
       </button>
       {card?.published && card.username ? (
         <button className="btn btn-small" onClick={copyLink}>
