@@ -1,4 +1,5 @@
 import type { CardConfig } from '../types';
+import { fonts } from '../data/palettes';
 
 function escHtml(s: string): string {
   return (s || '')
@@ -116,11 +117,19 @@ export function generateCardHtml(config: CardConfig): string {
   vcardLines.push('END:VCARD');
   const vcardData = 'data:text/vcard;charset=utf-8,' + encodeURIComponent(vcardLines.join('\n'));
 
+  const fontOption = fonts.find((f) => f.value === font);
+  const fontStylesheet = fontOption?.google
+    ? `<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=${fontOption.google}&display=swap" rel="stylesheet" />`
+    : '';
+
   return `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+${fontStylesheet}
 <title>${escHtml(name || 'Your Name')}</title>
 <meta name="description" content="Save my contact, or follow along." />
 <meta property="og:title" content="${escHtml(name || 'Your Name')}" />

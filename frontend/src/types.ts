@@ -15,10 +15,14 @@ export interface Palette {
   colors: BrandColors;
 }
 
+export type FontCategory = 'Serif' | 'Sans' | 'Display' | 'Handwriting' | 'Mono';
+
 export interface FontOption {
   id: string;
   label: string;
   value: string;
+  category: FontCategory;
+  google?: string;
   preview: string;
   style: React.CSSProperties;
 }
