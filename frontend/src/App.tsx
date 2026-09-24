@@ -3,9 +3,7 @@ import { ConfigProvider } from './store';
 import { AuthProvider, useAuth } from './auth';
 import { ThemeProvider } from './theme';
 import Landing from './pages/Landing';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
-import Onboarding from './pages/Onboarding';
+import Auth from './pages/Auth';
 import Editor from './pages/Editor';
 import Dashboard from './pages/Dashboard';
 import './styles/tokens.css';
@@ -20,13 +18,6 @@ function RequireAuth({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-function RequireGuest({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
-  if (loading) return <div className="page-loading">Loading…</div>;
-  if (user) return <Navigate to="/dashboard" replace />;
-  return <>{children}</>;
-}
-
 export default function App() {
   return (
     <ThemeProvider>
@@ -35,18 +26,9 @@ export default function App() {
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Landing />} />
-              <Route
-                path="/login"
-                element={<RequireGuest><Login /></RequireGuest>}
-              />
-              <Route
-                path="/signup"
-                element={<RequireGuest><Signup /></RequireGuest>}
-              />
-              <Route
-                path="/onboarding"
-                element={<RequireAuth><Onboarding /></RequireAuth>}
-              />
+              <Route path="/login" element={<Auth />} />
+              <Route path="/signup" element={<Auth />} />
+              <Route path="/onboarding" element={<Auth />} />
               <Route
                 path="/editor"
                 element={<RequireAuth><Editor /></RequireAuth>}
