@@ -75,7 +75,6 @@ export function generateCardHtml(config: CardConfig, username?: string | null): 
       <button class="flip-back" id="flipBack" type="button" aria-label="Flip back to photo">
         <h3 class="flip-back-title">Scan to connect</h3>
         <div class="qrbox">${generateQrSvg(cardUrl)}</div>
-        <p class="qr-url">${escHtml(cardUrl)}</p>
         <p class="qr-hint">Tap to flip back</p>
       </button>
     </div></div>`
@@ -117,6 +116,10 @@ export function generateCardHtml(config: CardConfig, username?: string | null): 
   const layoutStyles: Record<string, string> = {
     compact: `
   .flip{aspect-ratio:16/12;}
+  .flip-back{padding:12px 10px;gap:5px;}
+  .flip-back-title{font-size:15px;}
+  .flip-back .qrbox{width:min(46%,166px);}
+  .flip-back .qr-hint{font-size:10.5px;padding:5px 11px;}
   h1{font-size:28px;margin-bottom:6px;}
   .eyebrow{margin-bottom:10px;font-size:10px;}
   .role{margin-bottom:16px;font-size:12.5px;}
@@ -126,6 +129,10 @@ export function generateCardHtml(config: CardConfig, username?: string | null): 
   .sep{margin:16px 2px 10px;}`,
     bold: `
   .flip{aspect-ratio:16/10;}
+  .flip-back{padding:10px 8px;gap:4px;}
+  .flip-back-title{font-size:14px;}
+  .flip-back .qrbox{width:min(40%,148px);}
+  .flip-back .qr-hint{font-size:10px;padding:5px 10px;}
   h1{font-size:40px;letter-spacing:-0.02em;margin-bottom:8px;}
   .role{font-size:14.5px;max-width:34ch;}` };
   const layoutCss = layoutStyles[layout] || '';
@@ -178,12 +185,11 @@ ${fontStylesheet}
   .qr-fab{position:absolute;top:14px;right:14px;z-index:3;width:40px;height:40px;padding:0;border-radius:50%;display:grid;place-items:center;border:1px solid rgba(255,255,255,0.4);background:rgba(8,24,22,0.45);color:#fff;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);cursor:pointer;-webkit-appearance:none;appearance:none;}
   .qr-fab svg{width:19px;height:19px;}
   .qr-fab:active{transform:scale(0.93);}
-  .flip-back{position:absolute;inset:0;transform:rotateY(180deg);backface-visibility:hidden;-webkit-backface-visibility:hidden;width:100%;height:100%;border:0;padding:20px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:var(--cream);cursor:pointer;font-family:var(--sans);text-align:center;-webkit-appearance:none;appearance:none;}
-  .flip-back-title{margin:0;font-family:var(--serif);font-weight:400;font-size:19px;color:${bgMid};}
-  .flip-back .qrbox{width:min(58%,210px);}
+  .flip-back{position:absolute;inset:0;transform:rotateY(180deg);backface-visibility:hidden;-webkit-backface-visibility:hidden;width:100%;height:100%;border:0;padding:16px 14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;background:var(--cream);cursor:pointer;font-family:var(--sans);text-align:center;-webkit-appearance:none;appearance:none;box-sizing:border-box;}
+  .flip-back-title{margin:0;font-family:var(--serif);font-weight:400;font-size:17px;color:${bgMid};flex-shrink:0;}
+  .flip-back .qrbox{width:min(56%,200px);flex-shrink:0;}
   .flip-back .qrbox svg{display:block;width:100%;height:auto;border-radius:8px;background:#ffffff;}
-  .flip-back .qr-url{margin:2px 0 0;font-size:11.5px;color:${bgMid};word-break:break-all;max-width:100%;}
-  .flip-back .qr-hint{margin:0;font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:${bgMid};opacity:0.65;}
+  .flip-back .qr-hint{flex-shrink:0;margin:3px 0 0;padding:6px 13px;border-radius:999px;background:rgba(0,0,0,0.08);font-size:11.5px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:${bgMid};opacity:1;}
   @media(prefers-reduced-motion:reduce){.flip-inner{transition:none;}}
   .portrait[hidden]{display:none;}
   .portrait img,.portrait video{width:100%;height:100%;object-fit:cover;object-position:center 18%;display:block;}
