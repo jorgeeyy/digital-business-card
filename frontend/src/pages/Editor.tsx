@@ -28,18 +28,37 @@ export default function Editor() {
     };
   }, [config, linkUsername, setLatestHtml]);
 
-  const handleSave = useCallback(async () => {
-    await saveNow(generateCardHtml(config, linkUsername));
-  }, [config, linkUsername, saveNow]);
+  const handlePublishClick = useCallback(async () => {
+    if (card?.published && card.username) {
+      const url = publicCardUrl(card.username);
+      const tab = window.open('about:blank', '_blank');
+      await saveNow(generateCardHtml(config, linkUsername));
+      if (tab) {
+        tab.location.replace(url);
+      } else {
+        window.open(url, '_blank');
+      }
+    } else {
+      setShowPublish(true);
+    }
+  }, [card, config, linkUsername, saveNow]);
 
   const handlePublish = useCallback(
     async (username: string) => {
       setPublishing(true);
       setPublishError(null);
+      const tab = window.open('about:blank', '_blank');
       try {
-        await publish(username, generateCardHtml(config, username));
+        const published = await publish(username, generateCardHtml(config, username));
+        const url = publicCardUrl(published.username ?? username);
+        if (tab) {
+          tab.location.replace(url);
+        } else {
+          window.open(url, '_blank');
+        }
         setShowPublish(false);
       } catch (err) {
+        if (tab) tab.close();
         setPublishError(err instanceof Error ? err.message : 'Publish failed');
       } finally {
         setPublishing(false);
@@ -61,16 +80,12 @@ export default function Editor() {
 
   const actions = (
     <>
-      <button className="btn btn-small btn-ghost" onClick={handleSave}>
-        Save
+      <button className="btn btn-small" onClick={handlePublishClick}>
+        Publish
       </button>
-      {card?.published && card.username ? (
-        <button className="btn btn-small" onClick={copyLink}>
+      {card?.published && card.username && (
+        <button className="btn btn-small btn-ghost" onClick={copyLink}>
           {copied ? 'Copied!' : 'Copy link'}
-        </button>
-      ) : (
-        <button className="btn btn-small" onClick={() => setShowPublish(true)}>
-          Publish
         </button>
       )}
     </>
