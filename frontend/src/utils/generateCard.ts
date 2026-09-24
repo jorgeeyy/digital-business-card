@@ -59,14 +59,29 @@ export function generateCardHtml(config: CardConfig, username?: string | null): 
   const bgCenter = `color-mix(in srgb, ${colors.primary} ${bgLight ? 85 : 55}%, ${colors.accent})`;
   const bgMid = `color-mix(in srgb, ${colors.primary} ${bgLight ? 92 : 75}%, ${colors.accent})`;
 
-  let portraitHtml = '';
+  const cardUrl = username ? absoluteCardUrl(username) : null;
+
+  const qrFabHtml = `<button class="qr-fab" id="qrFab" type="button" aria-label="Show QR code"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 14v.01M14 21h.01M17 21h4v-4"/></svg></button>`;
+
+  let imageHtml = '';
   if (portrait) {
-    if (portrait.type === 'video') {
-      portraitHtml = `<div class="portrait"><video src="${mediaSrc(portrait.dataUrl)}" autoplay loop muted playsinline></video></div>`;
-    } else {
-      portraitHtml = `<div class="portrait"><img src="${mediaSrc(portrait.dataUrl)}" alt="Portrait" /></div>`;
-    }
+    const media =
+      portrait.type === 'video'
+        ? `<video src="${mediaSrc(portrait.dataUrl)}" autoplay loop muted playsinline></video>`
+        : `<img src="${mediaSrc(portrait.dataUrl)}" alt="Portrait" />`;
+    imageHtml = cardUrl
+      ? `<div class="flip" id="flip"><div class="flip-inner">
+      <div class="portrait flip-front">${media}${qrFabHtml}</div>
+      <button class="flip-back" id="flipBack" type="button" aria-label="Flip back to photo">
+        <h3 class="flip-back-title">Scan to connect</h3>
+        <div class="qrbox">${generateQrSvg(cardUrl)}</div>
+        <p class="qr-url">${escHtml(cardUrl)}</p>
+        <p class="qr-hint">Tap to flip back</p>
+      </button>
+    </div></div>`
+      : `<div class="flip"><div class="flip-inner"><div class="portrait flip-front">${media}</div></div></div>`;
   }
+  const showQrButton = !(portrait && cardUrl);
 
   const monogramHidden = portrait ? 'hidden' : '';
 
@@ -95,14 +110,13 @@ export function generateCardHtml(config: CardConfig, username?: string | null): 
     </a>`;
   });
 
-  const cardUrl = username ? absoluteCardUrl(username) : null;
   const qrModalHtml = cardUrl
     ? `<div id="qrModal"><div class="sheet"><h3>Scan to connect</h3><p class="qr-url">${escHtml(cardUrl)}</p><div class="qrbox">${generateQrSvg(cardUrl)}</div><button class="close" onclick="document.getElementById('qrModal')?.classList.remove('show')" type="button">Done</button></div></div>`
     : `<div id="qrModal"><div class="sheet"><h3>Scan to connect</h3><p style="font-size:12px;color:${bgMid};">Publish your card to get your QR code</p><button class="close" onclick="document.getElementById('qrModal')?.classList.remove('show')" type="button">Done</button></div></div>`;
 
   const layoutStyles: Record<string, string> = {
     compact: `
-  .portrait{aspect-ratio:16/12;}
+  .flip{aspect-ratio:16/12;}
   h1{font-size:28px;margin-bottom:6px;}
   .eyebrow{margin-bottom:10px;font-size:10px;}
   .role{margin-bottom:16px;font-size:12.5px;}
@@ -111,7 +125,7 @@ export function generateCardHtml(config: CardConfig, username?: string | null): 
   .quick a{padding:10px 4px;font-size:10.5px;}
   .sep{margin:16px 2px 10px;}`,
     bold: `
-  .portrait{aspect-ratio:16/10;}
+  .flip{aspect-ratio:16/10;}
   h1{font-size:40px;letter-spacing:-0.02em;margin-bottom:8px;}
   .role{font-size:14.5px;max-width:34ch;}` };
   const layoutCss = layoutStyles[layout] || '';
@@ -157,7 +171,20 @@ ${fontStylesheet}
   .card{width:100%;max-width:420px;height:100svh;align-self:center;position:relative;padding:38px 26px 26px;border-radius:24px;background:linear-gradient(180deg,${hexToRgba(colors.cardBg, 0.7)},${hexToRgba(colors.cardBg, 0.5)} 40%);border:1px solid var(--line);box-shadow:0 1px 0 rgba(255,255,255,0.05) inset,0 30px 70px -30px rgba(0,0,0,0.6);overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
   .card::-webkit-scrollbar{display:none;}
   .eyebrow{position:relative;text-align:center;font-size:11px;letter-spacing:0.32em;text-transform:uppercase;color:var(--sand);opacity:0.85;margin:0 0 18px;}
-  .portrait{position:relative;margin:-38px -26px 20px;aspect-ratio:4/5;overflow:hidden;background:${colors.cardBg};}
+  .flip{position:relative;margin:-38px -26px 20px;aspect-ratio:4/5;perspective:1200px;}
+  .flip-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .65s cubic-bezier(.35,.1,.25,1);}
+  .flip.flipped .flip-inner{transform:rotateY(180deg);}
+  .portrait{position:absolute;inset:0;overflow:hidden;background:${colors.cardBg};backface-visibility:hidden;-webkit-backface-visibility:hidden;}
+  .qr-fab{position:absolute;top:14px;right:14px;z-index:3;width:40px;height:40px;padding:0;border-radius:50%;display:grid;place-items:center;border:1px solid rgba(255,255,255,0.4);background:rgba(8,24,22,0.45);color:#fff;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);cursor:pointer;-webkit-appearance:none;appearance:none;}
+  .qr-fab svg{width:19px;height:19px;}
+  .qr-fab:active{transform:scale(0.93);}
+  .flip-back{position:absolute;inset:0;transform:rotateY(180deg);backface-visibility:hidden;-webkit-backface-visibility:hidden;width:100%;height:100%;border:0;padding:20px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:var(--cream);cursor:pointer;font-family:var(--sans);text-align:center;-webkit-appearance:none;appearance:none;}
+  .flip-back-title{margin:0;font-family:var(--serif);font-weight:400;font-size:19px;color:${bgMid};}
+  .flip-back .qrbox{width:min(58%,210px);}
+  .flip-back .qrbox svg{display:block;width:100%;height:auto;border-radius:8px;background:#ffffff;}
+  .flip-back .qr-url{margin:2px 0 0;font-size:11.5px;color:${bgMid};word-break:break-all;max-width:100%;}
+  .flip-back .qr-hint{margin:0;font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:${bgMid};opacity:0.65;}
+  @media(prefers-reduced-motion:reduce){.flip-inner{transition:none;}}
   .portrait[hidden]{display:none;}
   .portrait img,.portrait video{width:100%;height:100%;object-fit:cover;object-position:center 18%;display:block;}
   .portrait::after{content:"";position:absolute;left:0;right:0;bottom:0;height:50%;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,0.5) 100%);pointer-events:none;}
@@ -199,7 +226,7 @@ ${fontStylesheet}
 </head>
 <body>
   <main class="card">
-    ${portraitHtml}
+    ${imageHtml}
     <div class="monogram reveal" ${monogramHidden}>${initials}</div>
     <h1 class="reveal">${escHtml(name || 'Your Name')}</h1>
     <p class="eyebrow reveal">${escHtml(location || 'Your City · Country')}</p>
@@ -213,10 +240,10 @@ ${fontStylesheet}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg>
         <span>Share</span>
       </button>
-      <button type="button" onclick="document.getElementById('qrModal')?.classList.add('show')">
+      ${showQrButton ? `<button type="button" onclick="document.getElementById('qrModal')?.classList.add('show')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 14v.01M14 21h.01M17 21h4v-4"/></svg>
         <span>QR</span>
-      </button>
+      </button>` : ''}
     </div>
     ${quickHtml ? `<div class="quick reveal">${quickHtml}</div>` : ''}
     ${socialsHtml ? `<div class="sep reveal">Follow along</div><nav class="socials reveal">${socialsHtml}</nav>` : ''}
@@ -225,6 +252,13 @@ ${fontStylesheet}
   ${qrModalHtml}
   <script>
     document.getElementById('qrModal')?.addEventListener('click',function(e){if(e.target===e.currentTarget)e.target.classList.remove('show')});
+    document.getElementById('qrFab')?.addEventListener('click',function(e){
+      e.stopPropagation();
+      document.getElementById('flip')?.classList.add('flipped');
+    });
+    document.getElementById('flipBack')?.addEventListener('click',function(){
+      document.getElementById('flip')?.classList.remove('flipped');
+    });
     document.getElementById('shareBtn')?.addEventListener('click',function(){
       var url=window.location.href;
       if(navigator.share&&location.protocol!=='file:'){
