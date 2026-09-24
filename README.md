@@ -50,10 +50,10 @@ Requires [uv](https://docs.astral.sh/uv/).
 cd backend
 uv sync                              # install deps from uv.lock
 cp .env.example .env                 # then edit values (see below)
-uv run uvicorn main:app --reload --port 8000
+uv run uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-Backend runs at http://localhost:8000 (API docs at `/docs`).
+Backend runs at http://localhost:8000 (API docs at `/docs`). `--host 0.0.0.0` is needed for phone/LAN testing.
 
 Schema is managed with **Alembic**. Migrations run automatically on server startup; you can also run them by hand:
 
@@ -81,6 +81,16 @@ Frontend runs at http://localhost:5173 and proxies `/api` to the backend.
 Visit http://localhost:5173 — sign up, claim a username, build your card, publish.
 
 Public cards are served by the backend at `http://localhost:8000/username` in development.
+
+### 4. Test on your phone
+
+Both dev servers must listen on all interfaces (Vite already does via `server.host: true`; use `--host 0.0.0.0` for uvicorn, as above), then open `http://<your-LAN-IP>:5173` on the phone (find your IP with `ipconfig`).
+
+One-time, run **as Administrator** to let Windows Firewall pass backend traffic from the phone:
+
+```powershell
+netsh advfirewall firewall add rule name="TapCard dev 8000" dir=in action=allow protocol=TCP localport=8000
+```
 
 ## Environment Variables (`backend/.env`)
 

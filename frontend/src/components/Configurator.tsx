@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useConfig } from '../store';
+import { mediaSrc } from '../api';
 import BrandPicker from './BrandPicker';
 import FontPicker from './FontPicker';
 import LayoutPicker from './LayoutPicker';
@@ -194,7 +195,7 @@ export default function Configurator() {
         {active === 'media' && (
           <UploadZone
             label="Portrait"
-            file={config.portrait?.dataUrl || null}
+            file={config.portrait?.dataUrl ? mediaSrc(config.portrait.dataUrl) : null}
             isVideoFile={config.portrait?.type === 'video'}
             onFile={(url, isVideo) => {
               if (!url) {

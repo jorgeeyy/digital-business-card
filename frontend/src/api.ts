@@ -82,16 +82,24 @@ export const api = {
   },
 };
 
+function devServerOrigin(): string {
+  return `http://${window.location.hostname}:8000`;
+}
+
+export function mediaSrc(url: string): string {
+  return url.replace(/^http:\/\/localhost:8000/, '');
+}
+
 export function publicCardUrl(username: string): string {
   if (import.meta.env.DEV) {
-    return `http://localhost:8000/${username}`;
+    return `${devServerOrigin()}/${username}`;
   }
   return `/${username}`;
 }
 
 export function absoluteCardUrl(username: string): string {
   if (import.meta.env.DEV) {
-    return `http://localhost:8000/${username}`;
+    return `${devServerOrigin()}/${username}`;
   }
   return `${window.location.origin}/${username}`;
 }

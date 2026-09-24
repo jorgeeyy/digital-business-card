@@ -1,6 +1,6 @@
 import type { CardConfig } from '../types';
 import { fonts } from '../data/fonts';
-import { absoluteCardUrl } from '../api';
+import { absoluteCardUrl, mediaSrc } from '../api';
 import { generateQrSvg } from './qr';
 
 function escHtml(s: string): string {
@@ -62,9 +62,9 @@ export function generateCardHtml(config: CardConfig, username?: string | null): 
   let portraitHtml = '';
   if (portrait) {
     if (portrait.type === 'video') {
-      portraitHtml = `<div class="portrait"><video src="${portrait.dataUrl}" autoplay loop muted playsinline></video></div>`;
+      portraitHtml = `<div class="portrait"><video src="${mediaSrc(portrait.dataUrl)}" autoplay loop muted playsinline></video></div>`;
     } else {
-      portraitHtml = `<div class="portrait"><img src="${portrait.dataUrl}" alt="Portrait" /></div>`;
+      portraitHtml = `<div class="portrait"><img src="${mediaSrc(portrait.dataUrl)}" alt="Portrait" /></div>`;
     }
   }
 
@@ -156,7 +156,6 @@ ${fontStylesheet}
   body{height:100svh;font-family:var(--sans);color:var(--cream);background:radial-gradient(120% 80% at 50% -10%,var(--teal-2) 0%,var(--teal) 38%,var(--ink) 78%) fixed;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;display:flex;justify-content:center;padding:max(20px,env(safe-area-inset-top)) 18px max(28px,env(safe-area-inset-bottom));}
   .card{width:100%;max-width:420px;height:100svh;align-self:center;position:relative;padding:38px 26px 26px;border-radius:24px;background:linear-gradient(180deg,${hexToRgba(colors.cardBg, 0.7)},${hexToRgba(colors.cardBg, 0.5)} 40%);border:1px solid var(--line);box-shadow:0 1px 0 rgba(255,255,255,0.05) inset,0 30px 70px -30px rgba(0,0,0,0.6);overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
   .card::-webkit-scrollbar{display:none;}
-  .card::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 38% at 50% 14%,${hexToRgba(colors.accent, 0.15)},transparent 70%);pointer-events:none;transform-origin:50% 15%;will-change:transform,opacity;}
   .eyebrow{position:relative;text-align:center;font-size:11px;letter-spacing:0.32em;text-transform:uppercase;color:var(--sand);opacity:0.85;margin:0 0 18px;}
   .portrait{position:relative;margin:-38px -26px 20px;aspect-ratio:4/5;overflow:hidden;background:${colors.cardBg};will-change:transform,opacity;transform-origin:center top;}
   .portrait[hidden]{display:none;}
@@ -193,7 +192,7 @@ ${fontStylesheet}
   #qrModal .sheet .qr-url{font-size:12px;color:${bgMid};word-break:break-all;margin-bottom:12px;}
   #qrModal .sheet .qrbox svg{display:block;width:100%;height:auto;border-radius:10px;background:#ffffff;}
   #qrModal .close{margin-top:14px;width:100%;border:0;border-radius:12px;cursor:pointer;padding:11px;font-family:var(--sans);font-size:13px;font-weight:650;color:var(--cream);background:var(--teal);}
-  @media(prefers-reduced-motion:no-preference){.reveal{opacity:0;transform:translateY(10px);animation:rise .6s cubic-bezier(.2,.7,.2,1) forwards;}.reveal:nth-child(1){animation-delay:.02s}@keyframes rise{to{opacity:1;transform:none;}}.card::before{animation:glow 14s ease-in-out infinite alternate;}}
+  @media(prefers-reduced-motion:no-preference){.reveal{opacity:0;transform:translateY(10px);animation:rise .6s cubic-bezier(.2,.7,.2,1) forwards;}.reveal:nth-child(1){animation-delay:.02s}@keyframes rise{to{opacity:1;transform:none;}}}
   :focus-visible{outline:2px solid var(--sand);outline-offset:3px;border-radius:8px;}
   ${layoutCss}
 </style>

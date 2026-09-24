@@ -56,7 +56,7 @@ def _upload_local(data: bytes, key: str) -> str:
     filename = f"{uuid.uuid4().hex[:8]}-{os.path.basename(key)}"
     path = UPLOADS_DIR / filename
     path.write_bytes(data)
-    return f"{settings.public_base_url}/uploads/{filename}"
+    return f"/uploads/{filename}"
 
 
 def local_file_url(filename: str) -> str | None:
