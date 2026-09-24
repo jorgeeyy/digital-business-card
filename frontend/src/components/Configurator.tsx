@@ -6,14 +6,93 @@ import LayoutPicker from './LayoutPicker';
 import SocialRows from './SocialRows';
 import UploadZone from './UploadZone';
 
+const iconProps = {
+  width: 18,
+  height: 18,
+  viewBox: '0 0 24 24',
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeWidth: 1.75,
+  strokeLinecap: 'round' as const,
+  strokeLinejoin: 'round' as const,
+  'aria-hidden': true,
+};
+
 const TABS = [
-  { id: 'brand', label: 'Brand' },
-  { id: 'typography', label: 'Typography' },
-  { id: 'layout', label: 'Layout' },
-  { id: 'details', label: 'Details' },
-  { id: 'contact', label: 'Contact' },
-  { id: 'socials', label: 'Socials' },
-  { id: 'media', label: 'Media' },
+  {
+    id: 'brand',
+    label: 'Brand',
+    icon: (
+      <svg {...iconProps}>
+        <path d="M12 2.7l6.3 3.6v7.4L12 17.3l-6.3-3.6V6.3L12 2.7z" />
+        <path d="M12 17.3v4M8.5 21.3h7" />
+        <circle cx="12" cy="10" r="2.5" />
+      </svg>
+    ),
+  },
+  {
+    id: 'typography',
+    label: 'Typography',
+    icon: (
+      <svg {...iconProps}>
+        <path d="M4 7V4h16v3" />
+        <path d="M12 4v16" />
+        <path d="M8 20h8" />
+      </svg>
+    ),
+  },
+  {
+    id: 'layout',
+    label: 'Layout',
+    icon: (
+      <svg {...iconProps}>
+        <rect x="3" y="3" width="18" height="18" rx="2" />
+        <path d="M3 9h18M9 21V9" />
+      </svg>
+    ),
+  },
+  {
+    id: 'details',
+    label: 'Details',
+    icon: (
+      <svg {...iconProps}>
+        <circle cx="12" cy="8" r="4" />
+        <path d="M4 20c1.5-3.5 4.5-5 8-5s6.5 1.5 8 5" />
+      </svg>
+    ),
+  },
+  {
+    id: 'contact',
+    label: 'Contact',
+    icon: (
+      <svg {...iconProps}>
+        <path d="M22 16.9v2.5a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 3.7 2 2 0 0 1 4.1 1.5h2.5a2 2 0 0 1 2 1.7c.1 1 .3 1.9.7 2.8a2 2 0 0 1-.5 2.1L7.6 9.4a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z" />
+      </svg>
+    ),
+  },
+  {
+    id: 'socials',
+    label: 'Social links',
+    icon: (
+      <svg {...iconProps}>
+        <circle cx="18" cy="5" r="3" />
+        <circle cx="6" cy="12" r="3" />
+        <circle cx="18" cy="19" r="3" />
+        <path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4" />
+      </svg>
+    ),
+  },
+  {
+    id: 'media',
+    label: 'Media',
+    icon: (
+      <svg {...iconProps}>
+        <rect x="3" y="3" width="18" height="18" rx="2" />
+        <circle cx="8.5" cy="8.5" r="1.5" />
+        <path d="M21 15l-5-5L5 21" />
+      </svg>
+    ),
+  },
 ] as const;
 
 type TabId = (typeof TABS)[number]['id'];
@@ -42,10 +121,12 @@ export default function Configurator() {
             id={`cfg-tab-${tab.id}`}
             aria-selected={active === tab.id}
             aria-controls={`cfg-panel-${tab.id}`}
+            aria-label={tab.label}
+            title={tab.label}
             className={`cfg-tab${active === tab.id ? ' active' : ''}`}
             onClick={() => setActive(tab.id)}
           >
-            {tab.label}
+            {tab.icon}
           </button>
         ))}
       </div>
