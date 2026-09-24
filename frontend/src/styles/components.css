@@ -454,11 +454,11 @@
 }
 
 .split-form {
-  background: var(--surface);
+  background: transparent;
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
   padding: 36px 32px;
-  box-shadow: var(--shadow-card);
+  box-shadow: none;
 }
 
 .split-form h1 {
