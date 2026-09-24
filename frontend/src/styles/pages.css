@@ -736,18 +736,6 @@
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
 }
 
-.font-select-preview {
-  padding: 14px;
-  border-radius: 10px;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  font-size: 16px;
-  line-height: 1.45;
-  color: var(--text);
-  text-align: center;
-  overflow-wrap: anywhere;
-}
-
 .layout-options {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

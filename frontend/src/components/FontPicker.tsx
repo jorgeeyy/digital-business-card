@@ -55,11 +55,6 @@ export default function FontPicker() {
           })}
         </SelectContent>
       </Select>
-      <div className="font-select-preview" style={selected?.style}>
-        {selected
-          ? 'The quick brown fox jumps over the lazy dog'
-          : 'Custom font preview'}
-      </div>
     </div>
   );
 }
