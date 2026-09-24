@@ -78,15 +78,6 @@ export default function Editor() {
 
   return (
     <AppShell actions={actions}>
-      {card?.published && card.username && (
-        <div className="published-banner">
-          Your card is live at{' '}
-          <a href={publicCardUrl(card.username)} target="_blank" rel="noreferrer">
-            {card.username}
-          </a>
-        </div>
-      )}
-
       <div className="editor-layout">
         <Configurator />
         <CardPreview html={cardHtml} />

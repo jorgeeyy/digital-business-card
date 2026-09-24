@@ -1,5 +1,6 @@
 import { type ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { LogOut } from 'lucide-react';
 import { useAuth } from '../auth';
 import ThemeToggle from './ThemeToggle';
 
@@ -39,11 +40,14 @@ export default function AppShell({ children, actions, showAccount = true }: AppS
           {actions}
           {showAccount && user && (
             <div className="account-menu">
-              <span className="account-email" title={user.email}>
-                {user.email}
-              </span>
-              <button className="btn btn-small btn-ghost" onClick={handleLogout}>
-                Log out
+              <button
+                className="logout-btn"
+                onClick={handleLogout}
+                aria-label="Log out"
+                title="Log out"
+                type="button"
+              >
+                <LogOut size={16} strokeWidth={2} aria-hidden="true" />
               </button>
             </div>
           )}

@@ -233,7 +233,8 @@
 }
 
 /* ---------- Theme toggle ---------- */
-.theme-toggle {
+.theme-toggle,
+.logout-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -245,14 +246,17 @@
   color: var(--text);
   transition: background 0.15s ease, border-color 0.15s ease, transform 0.12s ease;
   flex-shrink: 0;
+  cursor: pointer;
 }
 
-.theme-toggle:hover {
+.theme-toggle:hover,
+.logout-btn:hover {
   background: var(--surface-2);
   border-color: var(--border-strong);
 }
 
-.theme-toggle:active {
+.theme-toggle:active,
+.logout-btn:active {
   transform: scale(0.96);
 }
 
@@ -288,15 +292,6 @@
   gap: 10px;
   padding-left: 12px;
   border-left: 1px solid var(--line);
-}
-
-.account-email {
-  font-size: 13px;
-  color: var(--text-dim);
-  max-width: 180px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .auth-page {
@@ -739,23 +734,6 @@
 
 @keyframes spin {
   to { transform: rotate(360deg); }
-}
-
-/* ---------- Published banner ---------- */
-.published-banner {
-  padding: 10px 20px;
-  text-align: center;
-  font-size: 13.5px;
-  color: var(--success);
-  background: var(--success-soft);
-  border-bottom: 1px solid rgba(26, 127, 55, 0.2);
-}
-
-.published-banner a {
-  color: var(--text);
-  font-weight: 600;
-  text-decoration: underline;
-  text-underline-offset: 3px;
 }
 
 /* ---------- Auth responsive ---------- */
