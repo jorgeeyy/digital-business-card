@@ -4,6 +4,7 @@ import { useConfig } from '../store';
 import { useAuth } from '../auth';
 import { generateCardHtml } from '../utils/generateCard';
 import { publicCardUrl } from '../api';
+import { usernameSchema } from '../validation';
 import Configurator from '../components/Configurator';
 import CardPreview from '../components/CardPreview';
 import AppShell from '../components/AppShell';
@@ -121,7 +122,9 @@ function PublishModal({
   onClose: () => void;
 }) {
   const [username, setUsername] = useState(defaultUsername);
-  const isValid = username.length >= 3;
+  const parsed = usernameSchema.safeParse(username);
+  const isValid = parsed.success;
+  const usernameError = parsed.success ? null : (parsed.error.issues[0]?.message ?? 'Invalid username');
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -154,6 +157,11 @@ function PublishModal({
             autoCapitalize="off"
           />
         </div>
+        {username.length > 0 && usernameError && (
+          <div className="hint bad" role="status" style={{ marginTop: 8 }}>
+            {usernameError}
+          </div>
+        )}
         <div className="modal-actions">
           <button className="btn btn-ghost" onClick={onClose}>
             Cancel

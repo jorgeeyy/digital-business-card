@@ -86,14 +86,14 @@ export function generateCardHtml(config: CardConfig, username?: string | null): 
 
   let quickHtml = '';
   if (phone) {
-    quickHtml += `<a href="tel:${phone}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span>Call</span></a>`;
+    quickHtml += `<a href="tel:${escHtml(phone)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span>Call</span></a>`;
   }
   if (email) {
-    quickHtml += `<a href="mailto:${email}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span>Email</span></a>`;
+    quickHtml += `<a href="mailto:${escHtml(email)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span>Email</span></a>`;
   }
   if (website) {
     const websiteUrl = website.startsWith('http') ? website : `https://${website}`;
-    quickHtml += `<a href="${websiteUrl}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><span>Website</span></a>`;
+    quickHtml += `<a href="${escHtml(websiteUrl)}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><span>Website</span></a>`;
   }
 
   let socialsHtml = '';
@@ -102,7 +102,7 @@ export function generateCardHtml(config: CardConfig, username?: string | null): 
     if (!url) return;
     const icon = socialIcon(soc.platform);
     const handle = soc.platform === 'WhatsApp' ? soc.handle : (soc.handle ? `@${soc.handle}` : url);
-    socialsHtml += `<a class="social" href="${url}" target="_blank" rel="noopener">
+    socialsHtml += `<a class="social" href="${escHtml(url)}" target="_blank" rel="noopener">
       <div class="ic">${icon}</div>
       <div class="tx"><span class="name">${soc.platform}</span><span class="sub">${escHtml(handle)}</span></div>
       <div class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
@@ -143,7 +143,9 @@ export function generateCardHtml(config: CardConfig, username?: string | null): 
   if (role) vcardLines.push(`TITLE:${role}`);
   if (website) vcardLines.push(`URL:${website}`);
   vcardLines.push('END:VCARD');
-  const vcardData = 'data:text/vcard;charset=utf-8,' + encodeURIComponent(vcardLines.join('\n'));
+  const vcardData =
+    'data:text/vcard;charset=utf-8,' +
+    encodeURIComponent(vcardLines.join('\n')).replace(/'/g, '%27');
 
   const fontOption = fonts.find((f) => f.value === font);
   const fontStylesheet = fontOption?.google

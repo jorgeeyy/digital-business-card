@@ -4,11 +4,10 @@ import { toast } from 'sonner';
 import { api } from '../api';
 import { useAuth } from '../auth';
 import AuthLayout from '../components/AuthLayout';
+import { USERNAME_RE } from '../validation';
 
 type Mode = 'login' | 'signup' | 'claim';
 type Phase = 'idle' | 'out-left' | 'out-right' | 'in-left' | 'in-right';
-
-const USERNAME_RE = /^[a-z0-9][a-z0-9_-]{2,29}$/;
 
 const GoogleIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">

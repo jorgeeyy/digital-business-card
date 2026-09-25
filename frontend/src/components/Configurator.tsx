@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useConfig } from '../store';
 import { mediaSrc } from '../api';
+import { emailSchema, phoneSchema, validateField, websiteSchema } from '../validation';
 import BrandPicker from './BrandPicker';
 import FontPicker from './FontPicker';
 import LayoutPicker from './LayoutPicker';
@@ -67,9 +68,24 @@ const TABS = [
 
 type TabId = (typeof TABS)[number]['id'];
 
+type ContactField = 'phone' | 'email' | 'website';
+
 export default function Configurator() {
   const { config, updateConfig, setPortrait } = useConfig();
   const [active, setActive] = useState<TabId>('brand');
+  const [fieldErrors, setFieldErrors] = useState<Partial<Record<ContactField, string>>>({});
+
+  const setFieldError = (field: ContactField, message: string | null) => {
+    setFieldErrors((prev) => {
+      if (!message) {
+        if (!(field in prev)) return prev;
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      }
+      return { ...prev, [field]: message };
+    });
+  };
 
   return (
     <div className="form-panel">
@@ -157,8 +173,15 @@ export default function Configurator() {
                 type="tel"
                 placeholder="+1 234 567 8900"
                 value={config.phone}
-                onChange={(e) => updateConfig({ phone: e.target.value })}
+                onChange={(e) => {
+                  setFieldError('phone', null);
+                  updateConfig({ phone: e.target.value });
+                }}
+                onBlur={() => setFieldError('phone', validateField(phoneSchema, config.phone))}
               />
+              {fieldErrors.phone && (
+                <div className="hint bad" role="status">{fieldErrors.phone}</div>
+              )}
             </div>
             <div className="field">
               <label htmlFor="cfg-email">Email</label>
@@ -167,8 +190,15 @@ export default function Configurator() {
                 type="email"
                 placeholder="john@example.com"
                 value={config.email}
-                onChange={(e) => updateConfig({ email: e.target.value })}
+                onChange={(e) => {
+                  setFieldError('email', null);
+                  updateConfig({ email: e.target.value });
+                }}
+                onBlur={() => setFieldError('email', validateField(emailSchema, config.email))}
               />
+              {fieldErrors.email && (
+                <div className="hint bad" role="status">{fieldErrors.email}</div>
+              )}
             </div>
             <div className="field">
               <label htmlFor="cfg-website">Website</label>
@@ -177,8 +207,15 @@ export default function Configurator() {
                 type="url"
                 placeholder="https://example.com"
                 value={config.website}
-                onChange={(e) => updateConfig({ website: e.target.value })}
+                onChange={(e) => {
+                  setFieldError('website', null);
+                  updateConfig({ website: e.target.value });
+                }}
+                onBlur={() => setFieldError('website', validateField(websiteSchema, config.website))}
               />
+              {fieldErrors.website && (
+                <div className="hint bad" role="status">{fieldErrors.website}</div>
+              )}
             </div>
           </>
         )}
