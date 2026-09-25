@@ -170,11 +170,10 @@ ${fontStylesheet}
     --sand:${colors.accent};--sand-deep:color-mix(in srgb, ${colors.accent} 85%, #000);
     --cream:${colors.text};--cream-dim:${creamDim};--r:16px;
     --serif:${font};
-    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;height:100svh;overflow:hidden;}
-  body{height:100svh;font-family:var(--sans);color:var(--cream);background:radial-gradient(120% 80% at 50% -10%,var(--teal-2) 0%,var(--teal) 38%,var(--ink) 78%) fixed;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;display:flex;justify-content:center;padding:max(20px,env(safe-area-inset-top)) 18px max(28px,env(safe-area-inset-bottom));}
+  body{height:100svh;font-family:var(--serif);color:var(--cream);background:radial-gradient(120% 80% at 50% -10%,var(--teal-2) 0%,var(--teal) 38%,var(--ink) 78%) fixed;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;display:flex;justify-content:center;padding:max(20px,env(safe-area-inset-top)) 18px max(28px,env(safe-area-inset-bottom));}
   .card{width:100%;max-width:420px;height:100svh;align-self:center;position:relative;padding:38px 26px 26px;border-radius:24px;background:linear-gradient(180deg,${hexToRgba(colors.cardBg, 0.7)},${hexToRgba(colors.cardBg, 0.5)} 40%);border:1px solid var(--line);box-shadow:0 1px 0 rgba(255,255,255,0.05) inset,0 30px 70px -30px rgba(0,0,0,0.6);overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
   .card::-webkit-scrollbar{display:none;}
   .eyebrow{position:relative;text-align:center;font-size:11px;letter-spacing:0.32em;text-transform:uppercase;color:var(--sand);opacity:0.85;margin:0 0 18px;}
@@ -185,7 +184,7 @@ ${fontStylesheet}
   .qr-fab{position:absolute;top:14px;right:14px;z-index:3;width:40px;height:40px;padding:0;border-radius:50%;display:grid;place-items:center;border:1px solid rgba(255,255,255,0.4);background:rgba(8,24,22,0.45);color:#fff;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);cursor:pointer;-webkit-appearance:none;appearance:none;}
   .qr-fab svg{width:19px;height:19px;}
   .qr-fab:active{transform:scale(0.93);}
-  .flip-back{position:absolute;inset:0;transform:rotateY(180deg);backface-visibility:hidden;-webkit-backface-visibility:hidden;width:100%;height:100%;border:0;padding:16px 14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;background:var(--cream);cursor:pointer;font-family:var(--sans);text-align:center;-webkit-appearance:none;appearance:none;box-sizing:border-box;}
+  .flip-back{position:absolute;inset:0;transform:rotateY(180deg);backface-visibility:hidden;-webkit-backface-visibility:hidden;width:100%;height:100%;border:0;padding:16px 14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;background:var(--cream);cursor:pointer;font-family:var(--serif);text-align:center;-webkit-appearance:none;appearance:none;box-sizing:border-box;}
   .flip-back-title{margin:0;font-family:var(--serif);font-weight:400;font-size:17px;color:${bgMid};flex-shrink:0;}
   .flip-back .qrbox{width:min(56%,200px);flex-shrink:0;}
   .flip-back .qrbox svg{display:block;width:100%;height:auto;border-radius:8px;background:#ffffff;}
@@ -198,10 +197,10 @@ ${fontStylesheet}
   .monogram[hidden]{display:none;}
   h1{position:relative;font-family:var(--serif);font-weight:400;font-size:34px;line-height:1.06;text-align:center;margin:0 0 10px;letter-spacing:-0.01em;}
   .role{position:relative;text-align:center;font-size:13.5px;line-height:1.5;color:var(--cream-dim);margin:0 auto 24px;max-width:30ch;}
-  .save{position:relative;width:100%;border:0;cursor:pointer;font-family:var(--sans);font-size:15px;font-weight:650;letter-spacing:0.01em;color:${saveText};background:linear-gradient(180deg,var(--sand),var(--sand-deep));padding:16px 18px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;gap:10px;}
+  .save{position:relative;width:100%;border:0;cursor:pointer;font-family:var(--serif);font-size:15px;font-weight:650;letter-spacing:0.01em;color:${saveText};background:linear-gradient(180deg,var(--sand),var(--sand-deep));padding:16px 18px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;gap:10px;}
   .save svg{width:18px;height:18px;}
   .actions{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
-  .actions button{display:flex;align-items:center;justify-content:center;gap:8px;padding:13px 10px;border-radius:13px;border:1px solid var(--line);background:rgba(255,255,255,0.025);color:var(--cream);font-family:var(--sans);font-size:13px;font-weight:600;letter-spacing:0.01em;cursor:pointer;}
+  .actions button{display:flex;align-items:center;justify-content:center;gap:8px;padding:13px 10px;border-radius:13px;border:1px solid var(--line);background:rgba(255,255,255,0.025);color:var(--cream);font-family:var(--serif);font-size:13px;font-weight:600;letter-spacing:0.01em;cursor:pointer;}
   .actions svg{width:17px;height:17px;color:var(--sand);}
   .quick{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px;}
   .quick a{display:flex;flex-direction:column;align-items:center;gap:6px;padding:13px 6px;border-radius:13px;border:1px solid var(--line);background:rgba(255,255,255,0.025);color:var(--cream);text-decoration:none;font-size:11.5px;letter-spacing:0.02em;}
@@ -224,7 +223,7 @@ ${fontStylesheet}
   #qrModal .sheet h3{margin:0 0 4px;font-family:var(--serif);font-weight:400;font-size:20px;color:${bgMid};}
   #qrModal .sheet .qr-url{font-size:12px;color:${bgMid};word-break:break-all;margin-bottom:12px;}
   #qrModal .sheet .qrbox svg{display:block;width:100%;height:auto;border-radius:10px;background:#ffffff;}
-  #qrModal .close{margin-top:14px;width:100%;border:0;border-radius:12px;cursor:pointer;padding:11px;font-family:var(--sans);font-size:13px;font-weight:650;color:var(--cream);background:var(--teal);}
+  #qrModal .close{margin-top:14px;width:100%;border:0;border-radius:12px;cursor:pointer;padding:11px;font-family:var(--serif);font-size:13px;font-weight:650;color:var(--cream);background:var(--teal);}
   @media(prefers-reduced-motion:no-preference){.reveal{opacity:0;transform:translateY(10px);animation:rise .6s cubic-bezier(.2,.7,.2,1) forwards;}.reveal:nth-child(1){animation-delay:.02s}@keyframes rise{to{opacity:1;transform:none;}}}
   :focus-visible{outline:2px solid var(--sand);outline-offset:3px;border-radius:8px;}
   ${layoutCss}
@@ -241,16 +240,12 @@ ${fontStylesheet}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
       <span>Save my contact</span>
     </button>
-    <div class="actions reveal">
-      <button type="button" id="shareBtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg>
-        <span>Share</span>
-      </button>
-      ${showQrButton ? `<button type="button" onclick="document.getElementById('qrModal')?.classList.add('show')">
+    ${showQrButton ? `<div class="actions reveal">
+      <button type="button" onclick="document.getElementById('qrModal')?.classList.add('show')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 14v.01M14 21h.01M17 21h4v-4"/></svg>
         <span>QR</span>
-      </button>` : ''}
-    </div>
+      </button>
+    </div>` : ''}
     ${quickHtml ? `<div class="quick reveal">${quickHtml}</div>` : ''}
     ${socialsHtml ? `<div class="sep reveal">Follow along</div><nav class="socials reveal">${socialsHtml}</nav>` : ''}
     <footer class="reveal"></footer>
@@ -264,14 +259,6 @@ ${fontStylesheet}
     });
     document.getElementById('flipBack')?.addEventListener('click',function(){
       document.getElementById('flip')?.classList.remove('flipped');
-    });
-    document.getElementById('shareBtn')?.addEventListener('click',function(){
-      var url=window.location.href;
-      if(navigator.share&&location.protocol!=='file:'){
-        navigator.share({title:'${escHtml(name)}',url:url}).catch(function(){prompt('Copy this link:',url)});
-      }else{
-        prompt('Copy this link:',url);
-      }
     });
   </script>
 </body>

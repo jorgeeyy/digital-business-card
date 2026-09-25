@@ -32,16 +32,6 @@ const TABS = [
     ),
   },
   {
-    id: 'layout',
-    label: 'Layout',
-    icon: (
-      <svg {...iconProps}>
-        <rect x="3" y="3" width="18" height="18" rx="2" />
-        <path d="M3 9h18M9 21V9" />
-      </svg>
-    ),
-  },
-  {
     id: 'contact',
     label: 'Contact',
     icon: (
@@ -124,9 +114,10 @@ export default function Configurator() {
             <BrandPicker />
             <div className="cfg-subhead">Typography</div>
             <FontPicker />
+            <div className="cfg-subhead">Layout</div>
+            <LayoutPicker />
           </>
         )}
-        {active === 'layout' && <LayoutPicker />}
         {active === 'contact' && (
           <>
             <div className="field">
