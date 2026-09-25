@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from config import settings
 from database import get_db
 from models import User
+from repositories import users as users_repo
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -54,7 +55,7 @@ def get_current_user(request: Request, db: Session = Depends(get_db)) -> User:
         user_id = int(payload.get("sub"))
     except (JWTError, ValueError, TypeError):
         raise HTTPException(status_code=401, detail="Invalid or expired session")
-    if (user := db.get(User, user_id)) is None:
+    if (user := users_repo.get_by_id(db, user_id)) is None:
         raise HTTPException(status_code=401, detail="User not found")
     else:
         return user

@@ -54,5 +54,9 @@ class UsernameAvailable(BaseModel):
     available: bool
 
 
+class UsernameRequest(BaseModel):
+    username: str
+
+
 class UploadResponse(BaseModel):
     url: str

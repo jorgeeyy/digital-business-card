@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
 
 from database import get_db
-from models import Card, User
+from errors import ServiceError
+from services import cards as cards_service
 
 router = APIRouter(tags=["public"])
 
@@ -12,17 +13,8 @@ router = APIRouter(tags=["public"])
 def serve_card(username: str, db: Session = Depends(get_db)):
     username = username.lower().strip()
     if "." in username or "@" in username:
-        raise HTTPException(status_code=404, detail="Not found")
-    if (user := db.query(User).filter(User.username == username).first()) is None:
-        raise HTTPException(status_code=404, detail="Card not found")
-    else:
-        card = (
-            db.query(Card)
-            .filter(Card.user_id == user.id, Card.published == True)  # noqa: E712
-            .order_by(Card.id.desc())
-            .first()
-        )
-        if card and card.html:
-            return HTMLResponse(content=card.html)
-        else:
-            raise HTTPException(status_code=404, detail="Card not found")
+        raise ServiceError(404, "Not found")
+    html = cards_service.get_published_html(db, username)
+    if html is None:
+        raise ServiceError(404, "Card not found")
+    return HTMLResponse(content=html)

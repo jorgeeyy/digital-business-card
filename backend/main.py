@@ -8,6 +8,7 @@ from fastapi.responses import FileResponse, JSONResponse
 
 from config import settings
 from database import Base, engine  # noqa: F401 — Base used by models/alembic
+from errors import register_exception_handler
 from routes import auth, cards, media, public
 from r2 import local_file_url
 
@@ -21,6 +22,8 @@ def run_migrations() -> None:
 run_migrations()
 
 app = FastAPI(title="Tap Card API", version="0.1.0")
+
+register_exception_handler(app)
 
 app.add_middleware(
     CORSMiddleware,
