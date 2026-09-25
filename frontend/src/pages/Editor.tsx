@@ -9,6 +9,10 @@ import Configurator from '../components/Configurator';
 import CardPreview from '../components/CardPreview';
 import AppShell from '../components/AppShell';
 
+const BRAND_KEYS = new Set<string>(['colors', 'font', 'layout']);
+const FAST_PREVIEW_MS = 250;
+const SLOW_PREVIEW_MS = 750;
+
 export default function Editor() {
   const { config, card, setLatestHtml, saveNow, publish } = useConfig();
   const { user } = useAuth();
@@ -17,13 +21,26 @@ export default function Editor() {
   const [publishing, setPublishing] = useState(false);
   const [copied, setCopied] = useState(false);
   const previewTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const prevConfig = useRef(config);
   const linkUsername = card?.username ?? user?.username ?? null;
 
   useEffect(() => {
+    const changedKeys = Object.keys(config).filter(
+      (key) => config[key as keyof typeof config] !== prevConfig.current[key as keyof typeof config],
+    );
+    prevConfig.current = config;
+
     const html = generateCardHtml(config, linkUsername);
     setLatestHtml(html);
+
+    const isBrandChange = changedKeys.every((key) => BRAND_KEYS.has(key));
+    const delay = isBrandChange ? FAST_PREVIEW_MS : SLOW_PREVIEW_MS;
+    const previewHtml = isBrandChange
+      ? html
+      : generateCardHtml(config, linkUsername, { preview: true });
+
     if (previewTimer.current) clearTimeout(previewTimer.current);
-    previewTimer.current = setTimeout(() => setCardHtml(html), 250);
+    previewTimer.current = setTimeout(() => setCardHtml(previewHtml), delay);
     return () => {
       if (previewTimer.current) clearTimeout(previewTimer.current);
     };

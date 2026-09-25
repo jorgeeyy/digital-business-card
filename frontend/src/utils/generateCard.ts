@@ -43,7 +43,11 @@ function socialIcon(platform: string): string {
   return icons[platform] || '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>';
 }
 
-export function generateCardHtml(config: CardConfig, username?: string | null): string {
+export function generateCardHtml(
+  config: CardConfig,
+  username?: string | null,
+  opts?: { preview?: boolean },
+): string {
   const { colors, font, layout, name, role, location, phone, email, website, socials, portrait } = config;
 
   const initials = name
@@ -226,7 +230,7 @@ ${fontStylesheet}
   #qrModal .sheet .qr-url{font-size:12px;color:${bgMid};word-break:break-all;margin-bottom:12px;}
   #qrModal .sheet .qrbox svg{display:block;width:100%;height:auto;border-radius:10px;background:#ffffff;}
   #qrModal .close{margin-top:14px;width:100%;border:0;border-radius:12px;cursor:pointer;padding:11px;font-family:var(--serif);font-size:13px;font-weight:650;color:var(--cream);background:var(--teal);}
-  @media(prefers-reduced-motion:no-preference){.reveal{opacity:0;transform:translateY(10px);animation:rise .6s cubic-bezier(.2,.7,.2,1) forwards;}.reveal:nth-child(1){animation-delay:.02s}@keyframes rise{to{opacity:1;transform:none;}}}
+  ${opts?.preview ? '' : `@media(prefers-reduced-motion:no-preference){.reveal{opacity:0;transform:translateY(10px);animation:rise .6s cubic-bezier(.2,.7,.2,1) forwards;}.reveal:nth-child(1){animation-delay:.02s}@keyframes rise{to{opacity:1;transform:none;}}}`}
   :focus-visible{outline:2px solid var(--sand);outline-offset:3px;border-radius:8px;}
   ${layoutCss}
 </style>
