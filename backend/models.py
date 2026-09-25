@@ -1,7 +1,7 @@
 from datetime import UTC, datetime
 
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, Text
-from sqlalchemy.orm import relationship
+from sqlalchemy import Boolean, DateTime, ForeignKey, Text
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
 
@@ -13,26 +13,28 @@ def utcnow():
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, unique=True, index=True, nullable=False)
-    password_hash = Column(String, nullable=True)
-    google_id = Column(String, unique=True, nullable=True)
-    username = Column(String, unique=True, index=True, nullable=True)
-    display_name = Column(String, nullable=True)
-    created_at = Column(DateTime, default=utcnow)
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    email: Mapped[str] = mapped_column(unique=True, index=True)
+    password_hash: Mapped[str | None] = mapped_column()
+    google_id: Mapped[str | None] = mapped_column(unique=True)
+    username: Mapped[str | None] = mapped_column(unique=True, index=True)
+    display_name: Mapped[str | None] = mapped_column()
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=True, default=utcnow)
 
-    cards = relationship("Card", back_populates="user")
+    cards: Mapped[list["Card"]] = relationship(back_populates="user")
 
 
 class Card(Base):
     __tablename__ = "cards"
 
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
-    config = Column(Text, nullable=False, default="{}")
-    html = Column(Text, nullable=False, default="")
-    published = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=utcnow)
-    updated_at = Column(DateTime, default=utcnow, onupdate=utcnow)
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    config: Mapped[str] = mapped_column(Text, default="{}")
+    html: Mapped[str] = mapped_column(Text, default="")
+    published: Mapped[bool] = mapped_column(Boolean, nullable=True, default=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=True, default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=True, default=utcnow, onupdate=utcnow
+    )
 
-    user = relationship("User", back_populates="cards")
+    user: Mapped["User"] = relationship(back_populates="cards")

@@ -1,10 +1,12 @@
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from models import Card
 
 
 def list_for_user(db: Session, user_id: int) -> list[Card]:
-    return db.query(Card).filter(Card.user_id == user_id).order_by(Card.id.desc()).all()
+    stmt = select(Card).where(Card.user_id == user_id).order_by(Card.id.desc())
+    return db.scalars(stmt).all()
 
 
 def get_by_id(db: Session, card_id: int) -> Card | None:
@@ -12,12 +14,13 @@ def get_by_id(db: Session, card_id: int) -> Card | None:
 
 
 def get_latest_published_for_user(db: Session, user_id: int) -> Card | None:
-    return (
-        db.query(Card)
-        .filter(Card.user_id == user_id, Card.published == True)  # noqa: E712
+    stmt = (
+        select(Card)
+        .where(Card.user_id == user_id, Card.published.is_(True))
         .order_by(Card.id.desc())
-        .first()
+        .limit(1)
     )
+    return db.scalars(stmt).first()
 
 
 def create(db: Session, *, user_id: int, config: str, html: str) -> Card:
