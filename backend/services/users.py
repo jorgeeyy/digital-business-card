@@ -7,9 +7,26 @@ from models import User
 from repositories import users as users_repo
 
 RESERVED_USERNAMES = {
-    "api", "login", "signup", "onboarding", "dashboard", "editor", "admin",
-    "static", "assets", "media", "uploads", "www", "app", "settings",
-    "help", "about", "terms", "privacy", "support", "blog",
+    "api",
+    "login",
+    "signup",
+    "onboarding",
+    "dashboard",
+    "editor",
+    "admin",
+    "static",
+    "assets",
+    "media",
+    "uploads",
+    "www",
+    "app",
+    "settings",
+    "help",
+    "about",
+    "terms",
+    "privacy",
+    "support",
+    "blog",
 }
 
 USERNAME_RE = re.compile(r"^[a-z0-9][a-z0-9_-]{2,29}$")

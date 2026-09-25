@@ -1,8 +1,6 @@
 from fastapi import APIRouter, Depends, UploadFile
-from sqlalchemy.orm import Session
 
 from auth import get_current_user
-from database import get_db
 from models import User
 from schemas import UploadResponse
 from services import media as media_service

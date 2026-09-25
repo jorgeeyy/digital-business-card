@@ -18,7 +18,9 @@ ALLOWED_TYPES = {
 MAX_SIZE = 25 * 1024 * 1024  # 25MB
 
 
-def upload_media(*, user_id: int, filename: str | None, content_type: str | None, data: bytes) -> UploadResponse:
+def upload_media(
+    *, user_id: int, filename: str | None, content_type: str | None, data: bytes
+) -> UploadResponse:
     content_type = (content_type or "").lower()
     if content_type not in ALLOWED_TYPES:
         raise ServiceError(400, f"Unsupported file type: {content_type}")
@@ -30,5 +32,4 @@ def upload_media(*, user_id: int, filename: str | None, content_type: str | None
     ext = ALLOWED_TYPES[content_type]
     safe_name = re.sub(r"[^a-z0-9_-]", "", (filename or "file").rsplit(".", 1)[0].lower())[:40]
     key = f"user-{user_id}/{uuid.uuid4().hex[:12]}-{safe_name}.{ext}"
-    url = upload_bytes(data, key, content_type)
-    return UploadResponse(url=url)
+    return UploadResponse(url=upload_bytes(data, key, content_type))

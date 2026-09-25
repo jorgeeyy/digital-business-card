@@ -30,7 +30,7 @@ def _validate_config_json(config: str) -> None:
     try:
         json.loads(config)
     except (json.JSONDecodeError, TypeError):
-        raise ServiceError(400, "Invalid config JSON")
+        raise ServiceError(400, "Invalid config JSON") from None
 
 
 def _get_own_card(db: Session, user: User, card_id: int) -> Card:
@@ -59,8 +59,7 @@ def update_card(db: Session, user: User, card_id: int, body: CardUpdate) -> Card
     _validate_config_json(body.config)
     card.config = body.config
     card.html = body.html
-    card = cards_repo.save(db, card)
-    return to_dto(card, user)
+    return to_dto(cards_repo.save(db, card), user)
 
 
 def publish_card(db: Session, user: User, card_id: int, body: PublishRequest) -> CardOut:

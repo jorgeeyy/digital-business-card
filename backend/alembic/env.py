@@ -1,11 +1,11 @@
 from logging.config import fileConfig
 
-from alembic import context
 from sqlalchemy import engine_from_config, pool
 
+import models  # noqa: F401 — register User, Card on Base.metadata
+from alembic import context
 from config import settings
 from database import Base
-import models  # noqa: F401 — register User, Card on Base.metadata
 
 config = context.config
 

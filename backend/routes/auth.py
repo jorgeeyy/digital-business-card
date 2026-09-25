@@ -6,7 +6,7 @@ from auth import clear_session_cookie, get_current_user, set_session_cookie
 from config import settings
 from database import get_db
 from models import User
-from schemas import LoginRequest, SignupRequest, UserOut, UsernameRequest
+from schemas import LoginRequest, SignupRequest, UsernameRequest, UserOut
 from services import auth as auth_service
 from services import users as users_service
 
@@ -55,6 +55,6 @@ def google_login():
 @router.get("/google/callback")
 def google_callback(code: str, response: Response = None, db: Session = Depends(get_db)):
     user = auth_service.google_callback(db, code)
-    redirect = RedirectResponse(settings.frontend_origin + "/dashboard")
+    redirect = RedirectResponse(f"{settings.frontend_origin}/dashboard")
     set_session_cookie(redirect, user.id)
     return redirect

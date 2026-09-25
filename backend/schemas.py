@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 from pydantic import BaseModel, EmailStr, Field
 
@@ -17,8 +16,8 @@ class LoginRequest(BaseModel):
 class UserOut(BaseModel):
     id: int
     email: str
-    username: Optional[str] = None
-    display_name: Optional[str] = None
+    username: str | None = None
+    display_name: str | None = None
 
     model_config = {"from_attributes": True}
 
@@ -42,8 +41,8 @@ class CardOut(BaseModel):
     config: str
     html: str
     published: bool
-    username: Optional[str] = None
-    public_url: Optional[str] = None
+    username: str | None = None
+    public_url: str | None = None
     created_at: datetime
     updated_at: datetime
 

@@ -26,7 +26,11 @@ def signup(db: Session, body: SignupRequest) -> User:
 def login(db: Session, body: LoginRequest) -> User:
     email = body.email.lower().strip()
     user = users_repo.get_by_email(db, email)
-    if user is None or not user.password_hash or not verify_password(body.password, user.password_hash):
+    if (
+        user is None
+        or not user.password_hash
+        or not verify_password(body.password, user.password_hash)
+    ):
         raise ServiceError(401, "Invalid email or password")
     return user
 
@@ -34,46 +38,45 @@ def login(db: Session, body: LoginRequest) -> User:
 def google_authorize_url() -> str:
     if not settings.google_client_id or not settings.google_client_secret:
         raise ServiceError(400, "Google login is not configured")
-    params = {
-        "client_id": settings.google_client_id,
-        "redirect_uri": settings.google_redirect_uri,
-        "response_type": "code",
-        "scope": "openid email profile",
-        "access_type": "online",
-        "prompt": "select_account",
-    }
-    return f"https://accounts.google.com/o/oauth2/v2/auth?{urlencode(params)}"
+    return "https://accounts.google.com/o/oauth2/v2/auth?" + urlencode(
+        {
+            "client_id": settings.google_client_id,
+            "redirect_uri": settings.google_redirect_uri,
+            "response_type": "code",
+            "scope": "openid email profile",
+            "access_type": "online",
+            "prompt": "select_account",
+        }
+    )
 
 
-def google_callback(db: Session, code: str) -> User:
-    if not settings.google_client_id or not settings.google_client_secret:
-        raise ServiceError(400, "Google login is not configured")
-    if not code:
-        raise ServiceError(400, "Missing authorization code")
+def _exchange_code_for_token(client: httpx.Client, code: str) -> str:
+    res = client.post(
+        "https://oauth2.googleapis.com/token",
+        data={
+            "code": code,
+            "client_id": settings.google_client_id,
+            "client_secret": settings.google_client_secret,
+            "redirect_uri": settings.google_redirect_uri,
+            "grant_type": "authorization_code",
+        },
+    )
+    if res.status_code != 200:
+        raise ServiceError(400, "Google token exchange failed")
+    return res.json()["access_token"]
 
-    with httpx.Client(timeout=15) as client:
-        token_res = client.post(
-            "https://oauth2.googleapis.com/token",
-            data={
-                "code": code,
-                "client_id": settings.google_client_id,
-                "client_secret": settings.google_client_secret,
-                "redirect_uri": settings.google_redirect_uri,
-                "grant_type": "authorization_code",
-            },
-        )
-        if token_res.status_code != 200:
-            raise ServiceError(400, "Google token exchange failed")
-        tokens = token_res.json()
 
-        userinfo_res = client.get(
-            "https://www.googleapis.com/oauth2/v3/userinfo",
-            headers={"Authorization": f"Bearer {tokens['access_token']}"},
-        )
-        if userinfo_res.status_code != 200:
-            raise ServiceError(400, "Failed to fetch Google profile")
-        userinfo = userinfo_res.json()
+def _fetch_google_userinfo(client: httpx.Client, access_token: str) -> dict:
+    res = client.get(
+        "https://www.googleapis.com/oauth2/v3/userinfo",
+        headers={"Authorization": f"Bearer {access_token}"},
+    )
+    if res.status_code != 200:
+        raise ServiceError(400, "Failed to fetch Google profile")
+    return res.json()
 
+
+def _find_or_create_google_user(db: Session, userinfo: dict) -> User:
     google_id = userinfo.get("sub")
     email = (userinfo.get("email") or "").lower().strip()
     name = userinfo.get("name") or ""
@@ -83,16 +86,27 @@ def google_callback(db: Session, code: str) -> User:
         raise ServiceError(400, "Google account email is not verified")
 
     user = users_repo.get_by_google_id(db, google_id)
-    if user is None:
-        user = users_repo.get_by_email(db, email)
-        if user is not None:
-            user.google_id = google_id
-            user = users_repo.save(db, user)
-        else:
-            user = users_repo.create(
-                db,
-                email=email,
-                google_id=google_id,
-                display_name=name or email.split("@")[0],
-            )
-    return user
+    if user is not None:
+        return user
+    user = users_repo.get_by_email(db, email)
+    if user is not None:
+        user.google_id = google_id
+        return users_repo.save(db, user)
+    return users_repo.create(
+        db,
+        email=email,
+        google_id=google_id,
+        display_name=name or email.split("@")[0],
+    )
+
+
+def google_callback(db: Session, code: str) -> User:
+    if not settings.google_client_id or not settings.google_client_secret:
+        raise ServiceError(400, "Google login is not configured")
+    if not code:
+        raise ServiceError(400, "Missing authorization code")
+
+    with httpx.Client(timeout=15) as client:
+        access_token = _exchange_code_for_token(client, code)
+        userinfo = _fetch_google_userinfo(client, access_token)
+    return _find_or_create_google_user(db, userinfo)

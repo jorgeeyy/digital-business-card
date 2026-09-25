@@ -1,16 +1,16 @@
 from pathlib import Path
 
-from alembic import command
 from alembic.config import Config
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 
+from alembic import command
 from config import settings
 from database import Base, engine  # noqa: F401 — Base used by models/alembic
 from errors import register_exception_handler
-from routes import auth, cards, media, public
 from r2 import local_file_url
+from routes import auth, cards, media, public
 
 
 def run_migrations() -> None:

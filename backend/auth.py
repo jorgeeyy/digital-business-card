@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from fastapi import Depends, HTTPException, Request, Response
 from jose import JWTError, jwt
@@ -25,16 +25,20 @@ def verify_password(plain: str, hashed: str) -> bool:
 
 
 def create_session_token(user_id: int) -> str:
-    expire = datetime.now(timezone.utc) + timedelta(days=settings.access_token_expire_days)
-    payload = {"sub": str(user_id), "exp": expire}
-    return jwt.encode(payload, settings.secret_key, algorithm=ALGORITHM)
+    return jwt.encode(
+        {
+            "sub": str(user_id),
+            "exp": datetime.now(UTC) + timedelta(days=settings.access_token_expire_days),
+        },
+        settings.secret_key,
+        algorithm=ALGORITHM,
+    )
 
 
 def set_session_cookie(response: Response, user_id: int) -> None:
-    token = create_session_token(user_id)
     response.set_cookie(
         key=COOKIE_NAME,
-        value=token,
+        value=create_session_token(user_id),
         max_age=settings.access_token_expire_days * 24 * 60 * 60,
         httponly=True,
         samesite="lax",
@@ -54,7 +58,7 @@ def get_current_user(request: Request, db: Session = Depends(get_db)) -> User:
         payload = jwt.decode(token, settings.secret_key, algorithms=[ALGORITHM])
         user_id = int(payload.get("sub"))
     except (JWTError, ValueError, TypeError):
-        raise HTTPException(status_code=401, detail="Invalid or expired session")
+        raise HTTPException(status_code=401, detail="Invalid or expired session") from None
     if (user := users_repo.get_by_id(db, user_id)) is None:
         raise HTTPException(status_code=401, detail="User not found")
     else:
