@@ -104,7 +104,6 @@
 .btn-google[aria-disabled='true'] {
   opacity: 0.5;
   cursor: not-allowed;
-  pointer-events: none;
 }
 
 .btn-small {
