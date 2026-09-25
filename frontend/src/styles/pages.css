@@ -913,11 +913,6 @@
   background: rgba(26, 20, 4, 0.95);
 }
 
-.upload-error {
-  font-size: 12px;
-  color: var(--error);
-}
-
 @media (max-width: 960px) {
   .editor-layout {
     grid-template-columns: 1fr;

@@ -1,4 +1,5 @@
 import { useRef, useState, useCallback, type DragEvent, type ChangeEvent } from 'react';
+import { toast } from 'sonner';
 import { api } from '../api';
 
 const VALID_IMAGE = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
@@ -16,12 +17,10 @@ interface UploadZoneProps {
 export default function UploadZone({ label, file, onFile, isPortrait, isVideoFile }: UploadZoneProps) {
   const ref = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
   const handleFile = useCallback(
     async (f: File | null) => {
-      setError(null);
       if (!f) {
         onFile(null);
         return;
@@ -32,11 +31,11 @@ export default function UploadZone({ label, file, onFile, isPortrait, isVideoFil
 
       if (isPortrait ? (!isImage && !isVideo) : !isImage) {
         const allowed = isPortrait ? 'PNG, JPG, WebP, GIF, MP4, WebM' : 'PNG, JPG, WebP, GIF';
-        setError(`Invalid file type. Accepted: ${allowed}`);
+        toast.error(`Invalid file type. Accepted: ${allowed}`);
         return;
       }
       if (f.size > MAX_SIZE) {
-        setError('File too large (max 25MB)');
+        toast.error('File too large (max 25MB)');
         return;
       }
 
@@ -45,7 +44,7 @@ export default function UploadZone({ label, file, onFile, isPortrait, isVideoFil
         const url = await api.uploadMedia(f);
         onFile(url, isVideo);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Upload failed');
+        toast.error(err instanceof Error ? err.message : 'Upload failed');
       } finally {
         setUploading(false);
       }
@@ -142,7 +141,6 @@ export default function UploadZone({ label, file, onFile, isPortrait, isVideoFil
           </>
         )}
       </div>
-      {error && <div className="upload-error">{error}</div>}
     </div>
   );
 }

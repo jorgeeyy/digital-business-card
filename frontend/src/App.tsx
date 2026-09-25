@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'sonner';
 import { ConfigProvider } from './store';
 import { AuthProvider, useAuth } from './auth';
-import { ThemeProvider } from './theme';
+import { ThemeProvider, useTheme } from './theme';
 import Landing from './pages/Landing';
 import Auth from './pages/Auth';
 import Editor from './pages/Editor';
@@ -17,11 +18,17 @@ function RequireAuth({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function ThemedToaster() {
+  const { theme } = useTheme();
+  return <Toaster position="top-center" richColors closeButton theme={theme} />;
+}
+
 export default function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
         <ConfigProvider>
+          <ThemedToaster />
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Landing />} />

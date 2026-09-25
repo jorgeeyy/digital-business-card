@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { toast } from 'sonner';
 import { useConfig } from '../store';
 import { useAuth } from '../auth';
 import { generateCardHtml } from '../utils/generateCard';
@@ -12,7 +13,6 @@ export default function Editor() {
   const { user } = useAuth();
   const [cardHtml, setCardHtml] = useState<string | null>(null);
   const [showPublish, setShowPublish] = useState(false);
-  const [publishError, setPublishError] = useState<string | null>(null);
   const [publishing, setPublishing] = useState(false);
   const [copied, setCopied] = useState(false);
   const previewTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -46,7 +46,6 @@ export default function Editor() {
   const handlePublish = useCallback(
     async (username: string) => {
       setPublishing(true);
-      setPublishError(null);
       const tab = window.open('about:blank', '_blank');
       try {
         const published = await publish(username, generateCardHtml(config, username));
@@ -59,7 +58,7 @@ export default function Editor() {
         setShowPublish(false);
       } catch (err) {
         if (tab) tab.close();
-        setPublishError(err instanceof Error ? err.message : 'Publish failed');
+        toast.error(err instanceof Error ? err.message : 'Publish failed');
       } finally {
         setPublishing(false);
       }
@@ -102,12 +101,8 @@ export default function Editor() {
         <PublishModal
           defaultUsername={user?.username || ''}
           busy={publishing}
-          error={publishError}
           onPublish={handlePublish}
-          onClose={() => {
-            setShowPublish(false);
-            setPublishError(null);
-          }}
+          onClose={() => setShowPublish(false)}
         />
       )}
     </AppShell>
@@ -117,13 +112,11 @@ export default function Editor() {
 function PublishModal({
   defaultUsername,
   busy,
-  error,
   onPublish,
   onClose,
 }: {
   defaultUsername: string;
   busy: boolean;
-  error: string | null;
   onPublish: (username: string) => void;
   onClose: () => void;
 }) {
@@ -161,7 +154,6 @@ function PublishModal({
             autoCapitalize="off"
           />
         </div>
-        {error && <div className="form-error" style={{ marginTop: 12 }}>{error}</div>}
         <div className="modal-actions">
           <button className="btn btn-ghost" onClick={onClose}>
             Cancel

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { api } from '../api';
 import { useAuth } from '../auth';
 import AuthLayout from '../components/AuthLayout';
@@ -40,7 +41,6 @@ export default function Auth() {
   // Signup form
   const [signupEmail, setSignupEmail] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   // Claim
@@ -58,7 +58,6 @@ export default function Auth() {
     (next: Mode) => {
       if (next === mode || phase !== 'idle') return;
       const dir: 1 | -1 = order.indexOf(next) >= order.indexOf(mode) ? 1 : -1;
-      setError(null);
       setPhase(dir === 1 ? 'out-left' : 'out-right');
       window.setTimeout(() => {
         setMode(next);
@@ -116,13 +115,12 @@ export default function Auth() {
 
   const submitLogin = async (e: FormEvent) => {
     e.preventDefault();
-    setError(null);
     setBusy(true);
     try {
       await login(loginEmail, loginPassword);
       navigate('/editor', { replace: true });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed');
+      toast.error(err instanceof Error ? err.message : 'Login failed');
     } finally {
       setBusy(false);
     }
@@ -130,9 +128,8 @@ export default function Auth() {
 
   const submitSignup = async (e: FormEvent) => {
     e.preventDefault();
-    setError(null);
     if (signupPassword.length < 8) {
-      setError('Password must be at least 8 characters');
+      toast.error('Password must be at least 8 characters');
       return;
     }
     setBusy(true);
@@ -141,7 +138,7 @@ export default function Auth() {
       await refresh();
       goMode('claim');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Signup failed');
+      toast.error(err instanceof Error ? err.message : 'Signup failed');
     } finally {
       setBusy(false);
     }
@@ -149,7 +146,6 @@ export default function Auth() {
 
   const submitClaim = async (e: FormEvent) => {
     e.preventDefault();
-    setError(null);
     const u = username.toLowerCase().trim();
     if (!USERNAME_RE.test(u) || status !== 'available') return;
     setBusy(true);
@@ -158,7 +154,7 @@ export default function Auth() {
       await refresh();
       navigate('/editor', { replace: true });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong');
+      toast.error(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
       setBusy(false);
     }
@@ -243,7 +239,6 @@ export default function Auth() {
                       minLength={8}
                     />
                   </label>
-                  {error && <div className="form-error">{error}</div>}
                   <button className="btn btn-full" type="submit" disabled={busy}>
                     {busy ? 'Creating account…' : 'Sign up'}
                   </button>
@@ -294,7 +289,6 @@ export default function Auth() {
                       autoComplete="current-password"
                     />
                   </label>
-                  {error && <div className="form-error">{error}</div>}
                   <button className="btn btn-full" type="submit" disabled={busy}>
                     {busy ? 'Logging in…' : 'Log in'}
                   </button>
@@ -336,7 +330,6 @@ export default function Auth() {
                   <div className={hintClass} role="status" aria-live="polite">
                     {hint}
                   </div>
-                  {error && <div className="form-error">{error}</div>}
                   <button className="btn btn-full" type="submit" disabled={busy || status !== 'available'}>
                     {busy ? 'Claiming…' : 'Claim username'}
                   </button>
