@@ -101,6 +101,12 @@
   filter: none;
 }
 
+.btn-google[aria-disabled='true'] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .btn-small {
   padding: 8px 12px;
   font-size: var(--fs-sm);

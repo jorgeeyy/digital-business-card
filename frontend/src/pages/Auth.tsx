@@ -212,7 +212,7 @@ export default function Auth() {
                 <h1>Create your account</h1>
                 <p className="auth-sub">Claim your link and build a card worth sharing.</p>
 
-                <a className="btn btn-google" href="/api/auth/google">
+                <a className="btn btn-google" aria-disabled="true" tabIndex={-1} onClick={(e) => e.preventDefault()}>
                   <GoogleIcon />
                   Continue with Google
                 </a>
@@ -264,7 +264,7 @@ export default function Auth() {
                 <h1>Log in to your card</h1>
                 <p className="auth-sub">Edit, publish, and share your digital business card.</p>
 
-                <a className="btn btn-google" href="/api/auth/google">
+                <a className="btn btn-google" aria-disabled="true" tabIndex={-1} onClick={(e) => e.preventDefault()}>
                   <GoogleIcon />
                   Continue with Google
                 </a>
