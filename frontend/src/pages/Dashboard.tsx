@@ -105,37 +105,33 @@ export default function Dashboard() {
 
         <h2 className="dash-section">Your card</h2>
 
-        <div className="dash-tile">
-          <div className="dash-tile-viewport">
-            <iframe
-              ref={setFrameNode}
-              title="Your card"
-              sandbox="allow-same-origin"
-              className="dash-tile-frame"
-            />
+        <div className="dash-row">
+          <div className="dash-tile">
+            <div className="dash-tile-viewport">
+              <iframe
+                ref={setFrameNode}
+                title="Your card"
+                sandbox="allow-same-origin"
+                className="dash-tile-frame"
+              />
+            </div>
           </div>
-          <div className="dash-tile-foot">
-            <div className="dash-tile-id">
-              <strong>{name}</strong>
-              <span>{published ? 'Published' : 'Draft'}</span>
-            </div>
-            <div className="dash-tile-actions">
-              <button
-                type="button"
-                className="dash-round"
-                disabled={!published}
-                title={published ? 'Open your public card' : 'Publish your card first'}
-                aria-label="View public card"
-                onClick={() => {
-                  if (published && linkUsername) window.open(publicCardUrl(linkUsername), '_blank');
-                }}
-              >
-                <ExternalLink size={17} />
-              </button>
-              <Link className="btn btn-ghost dash-edit" to="/editor">
-                Edit
-              </Link>
-            </div>
+          <div className="dash-actions" aria-label="Card actions">
+            <button
+              type="button"
+              className="dash-round"
+              disabled={!published}
+              title={published ? 'Open your public card' : 'Publish your card first'}
+              aria-label="View public card"
+              onClick={() => {
+                if (published && linkUsername) window.open(publicCardUrl(linkUsername), '_blank');
+              }}
+            >
+              <ExternalLink size={17} />
+            </button>
+            <Link className="btn btn-ghost dash-edit" to="/editor">
+              Edit
+            </Link>
           </div>
         </div>
       </div>

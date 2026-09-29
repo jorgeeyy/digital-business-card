@@ -1109,7 +1109,7 @@
 .dash-tile-viewport {
   position: relative;
   height: 300px;
-  border-radius: 25px 25px 0 0;
+  border-radius: 25px;
   overflow: hidden;
   background: transparent;
 }
@@ -1124,40 +1124,18 @@
   pointer-events: none;
 }
 
-.dash-tile-foot {
+.dash-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 14px 18px 16px;
+  gap: 18px;
+  flex-wrap: wrap;
 }
 
-.dash-tile-id {
-  min-width: 0;
+.dash-actions {
   display: flex;
   flex-direction: column;
-  gap: 3px;
-}
-
-.dash-tile-id strong {
-  font-size: 17.5px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.dash-tile-id span {
-  font-size: 13.5px;
-  color: var(--text-dim);
-}
-
-.dash-tile-actions {
-  display: flex;
   align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
+  gap: 10px;
 }
 
 .dash-round {
@@ -1247,5 +1225,10 @@
   }
   .dash-tile-viewport {
     height: 260px;
+  }
+  .dash-actions {
+    flex-direction: row;
+    width: 100%;
+    justify-content: center;
   }
 }
