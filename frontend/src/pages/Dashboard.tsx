@@ -1,10 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Check, Copy, CreditCard, ExternalLink, Sparkles } from 'lucide-react';
 import { useConfig } from '../store';
 import { useAuth } from '../auth';
-import { publicCardUrl } from '../api';
-import { generateCardHtml } from '../utils/generateCard';
+import { publicCardUrl, mediaSrc } from '../api';
 import AppShell from '../components/AppShell';
 
 function timeGreeting() {
@@ -20,23 +19,17 @@ export default function Dashboard() {
   const linkUsername = card?.username ?? user?.username ?? null;
   const published = Boolean(card?.published && linkUsername);
   const [copied, setCopied] = useState(false);
-  const [frameNode, setFrameNode] = useState<HTMLIFrameElement | null>(null);
-
-  const html = useMemo(
-    () => generateCardHtml(config, linkUsername, { solo: true }),
-    [config, linkUsername],
-  );
-
-  useEffect(() => {
-    if (!frameNode || !html) return;
-    const doc = frameNode.contentDocument;
-    if (!doc) return;
-    doc.open();
-    doc.write(html);
-    doc.close();
-  }, [frameNode, html]);
 
   const name = user?.display_name || user?.email?.split('@')[0] || 'there';
+  const initials =
+    name
+      .trim()
+      .split(/\s+/)
+      .map((w) => w[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2) || '?';
+  const portrait = config.portrait;
 
   const copyLink = async () => {
     if (!linkUsername) return;
@@ -107,14 +100,29 @@ export default function Dashboard() {
 
         <div className="dash-row">
           <div className="dash-tile">
-            <div className="dash-tile-viewport">
-              <iframe
-                ref={setFrameNode}
-                title="Your card"
-                sandbox="allow-same-origin"
-                className="dash-tile-frame"
-              />
+            <div className={`dash-avatar${portrait ? '' : ' is-mono'}`}>
+              {portrait ? (
+                portrait.type === 'video' ? (
+                  <video src={mediaSrc(portrait.dataUrl)} autoPlay loop muted playsInline />
+                ) : (
+                  <img src={mediaSrc(portrait.dataUrl)} alt="" />
+                )
+              ) : (
+                <span aria-hidden="true">{initials}</span>
+              )}
             </div>
+            {published && linkUsername ? (
+              <a
+                className="dash-link"
+                href={publicCardUrl(linkUsername)}
+                target="_blank"
+                rel="noopener"
+              >
+                {linkUsername}
+              </a>
+            ) : (
+              <span className="dash-link is-muted">Not published yet</span>
+            )}
           </div>
           <div className="dash-actions" aria-label="Card actions">
             <button
