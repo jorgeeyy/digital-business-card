@@ -486,6 +486,7 @@
 
 /* Section menu — mobile-style nav */
 .cfg-menu {
+  position: relative;
   display: flex;
   align-items: stretch;
   gap: 4px;
@@ -504,7 +505,24 @@
   display: none;
 }
 
+/* Sliding selected-thumb behind the active tab */
+.cfg-thumb {
+  position: absolute;
+  top: 5px;
+  bottom: 5px;
+  left: 0;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  pointer-events: none;
+  z-index: 0;
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 .cfg-tab {
+  position: relative;
+  z-index: 1;
   flex: 0 0 auto;
   min-width: 52px;
   display: flex;
@@ -524,8 +542,9 @@
     transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.cfg-tab:hover {
+.cfg-tab:hover:not(.active) {
   color: var(--text-dim);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
 }
 
 .cfg-tab:active {
@@ -533,9 +552,9 @@
 }
 
 .cfg-tab.active {
-  background: var(--surface);
-  color: var(--text);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), inset 0 0 0 1px var(--line);
+  background: transparent;
+  color: var(--on-accent);
+  box-shadow: none;
 }
 
 .cfg-panel {
@@ -568,8 +587,40 @@
   }
 }
 
+/* Direction-aware panel enter — follows the thumb's travel direction */
+.cfg-panel.from-right {
+  animation-name: cfg-swap-right;
+}
+
+.cfg-panel.from-left {
+  animation-name: cfg-swap-left;
+}
+
+@keyframes cfg-swap-right {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes cfg-swap-left {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .cfg-tab,
+  .cfg-thumb,
   .cfg-panel {
     transition: none;
     animation: none;

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useConfig } from '../store';
 import { mediaSrc } from '../api';
 import { emailSchema, phoneSchema, validateField, websiteSchema } from '../validation';
@@ -68,12 +68,38 @@ const TABS = [
 
 type TabId = (typeof TABS)[number]['id'];
 
+const TAB_IDS: TabId[] = TABS.map((tab) => tab.id);
+
 type ContactField = 'phone' | 'email' | 'website';
 
 export default function Configurator() {
   const { config, updateConfig, setPortrait } = useConfig();
   const [active, setActive] = useState<TabId>('brand');
+  const [dir, setDir] = useState<'left' | 'right'>('right');
+  const [thumb, setThumb] = useState<{ x: number; w: number } | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<ContactField, string>>>({});
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  const activeIdx = TAB_IDS.indexOf(active);
+
+  useEffect(() => {
+    const menu = menuRef.current;
+    if (!menu) return;
+    const measure = () => {
+      const el = menu.querySelectorAll<HTMLButtonElement>('.cfg-tab')[activeIdx];
+      if (el) setThumb({ x: el.offsetLeft, w: el.offsetWidth });
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, [activeIdx]);
+
+  const selectTab = (next: TabId) => {
+    if (next === active) return;
+    const nextIdx = TAB_IDS.indexOf(next);
+    setDir(nextIdx > activeIdx ? 'right' : 'left');
+    setActive(next);
+  };
 
   const setFieldError = (field: ContactField, message: string | null) => {
     setFieldErrors((prev) => {
@@ -98,7 +124,16 @@ export default function Configurator() {
         </h1>
       </div>
 
-      <div className="cfg-menu" role="tablist" aria-label="Configurator sections">
+      <div className="cfg-menu" role="tablist" aria-label="Configurator sections" ref={menuRef}>
+        <span
+          className="cfg-thumb"
+          aria-hidden="true"
+          style={
+            thumb
+              ? { transform: `translateX(${thumb.x}px)`, width: thumb.w }
+              : { display: 'none' }
+          }
+        />
         {TABS.map((tab) => (
           <button
             key={tab.id}
@@ -110,7 +145,7 @@ export default function Configurator() {
             aria-label={tab.label}
             title={tab.label}
             className={`cfg-tab${active === tab.id ? ' active' : ''}`}
-            onClick={() => setActive(tab.id)}
+            onClick={() => selectTab(tab.id)}
           >
             {tab.icon}
           </button>
@@ -118,7 +153,7 @@ export default function Configurator() {
       </div>
 
       <div
-        className="cfg-panel"
+        className={`cfg-panel from-${dir}`}
         role="tabpanel"
         id={`cfg-panel-${active}`}
         aria-labelledby={`cfg-tab-${active}`}

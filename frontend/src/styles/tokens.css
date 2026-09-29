@@ -8,6 +8,7 @@
   --sand-deep: #e8b923;
   --accent: #8a6d0b;
   --accent-hover: #6f5808;
+  --on-accent: #fffdf5;
 
   /* Page + surfaces — plain white, neutral grays */
   --bg: #ffffff;
@@ -87,6 +88,7 @@
 
   --accent: #ffd633;
   --accent-hover: #ffe066;
+  --on-accent: #1a1404;
 
   /* Plain black page, neutral dark surfaces */
   --bg: #000000;
