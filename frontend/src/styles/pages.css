@@ -981,7 +981,7 @@
     grid-template-columns: 1fr;
   }
   .app-header {
-    padding: 0 12px;
+    padding: 0 16px;
     height: auto;
     min-height: var(--header-h);
     flex-wrap: wrap;
