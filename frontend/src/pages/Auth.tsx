@@ -76,12 +76,12 @@ export default function Auth() {
         goMode('login');
         return;
       }
-      if (user.username) navigate('/editor', { replace: true });
+      if (user.username) navigate('/dashboard', { replace: true });
       return;
     }
     if (user) {
       if (!user.username) goMode('claim');
-      else navigate('/editor', { replace: true });
+      else navigate('/dashboard', { replace: true });
     }
   }, [user, authLoading, mode, navigate, goMode]);
 
@@ -117,7 +117,7 @@ export default function Auth() {
     setBusy(true);
     try {
       await login(loginEmail, loginPassword);
-      navigate('/editor', { replace: true });
+      navigate('/dashboard', { replace: true });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Login failed');
     } finally {
@@ -151,7 +151,7 @@ export default function Auth() {
     try {
       await api.claimUsername(u);
       await refresh();
-      navigate('/editor', { replace: true });
+      navigate('/dashboard', { replace: true });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Something went wrong');
     } finally {

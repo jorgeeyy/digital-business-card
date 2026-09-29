@@ -34,3 +34,4 @@ backend/.env
 backend/app.db
 backend/uploads/*
 !backend/uploads/.gitkeep
+screenshots/
