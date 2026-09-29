@@ -36,8 +36,8 @@ export default function Editor() {
     const isBrandChange = changedKeys.every((key) => BRAND_KEYS.has(key));
     const delay = isBrandChange ? FAST_PREVIEW_MS : SLOW_PREVIEW_MS;
     const previewHtml = isBrandChange
-      ? html
-      : generateCardHtml(config, linkUsername, { preview: true });
+      ? generateCardHtml(config, linkUsername, { solo: true })
+      : generateCardHtml(config, linkUsername, { preview: true, solo: true });
 
     if (previewTimer.current) clearTimeout(previewTimer.current);
     previewTimer.current = setTimeout(() => setCardHtml(previewHtml), delay);

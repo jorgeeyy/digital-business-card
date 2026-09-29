@@ -23,7 +23,7 @@ export default function Dashboard() {
   const [frameNode, setFrameNode] = useState<HTMLIFrameElement | null>(null);
 
   const html = useMemo(
-    () => generateCardHtml(config, linkUsername),
+    () => generateCardHtml(config, linkUsername, { solo: true }),
     [config, linkUsername],
   );
 

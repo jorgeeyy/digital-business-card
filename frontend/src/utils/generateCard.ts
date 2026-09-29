@@ -46,7 +46,7 @@ function socialIcon(platform: string): string {
 export function generateCardHtml(
   config: CardConfig,
   username?: string | null,
-  opts?: { preview?: boolean },
+  opts?: { preview?: boolean; solo?: boolean },
 ): string {
   const { colors, font, layout, name, role, location, phone, email, website, socials, portrait } = config;
 
@@ -233,6 +233,7 @@ ${fontStylesheet}
   ${opts?.preview ? '' : `@media(prefers-reduced-motion:no-preference){.reveal{opacity:0;transform:translateY(10px);animation:rise .6s cubic-bezier(.2,.7,.2,1) forwards;}.reveal:nth-child(1){animation-delay:.02s}@keyframes rise{to{opacity:1;transform:none;}}}`}
   :focus-visible{outline:2px solid var(--sand);outline-offset:3px;border-radius:8px;}
   ${layoutCss}
+  ${opts?.solo ? 'body{padding:0;}.card{max-width:none;border-radius:0;border:0;box-shadow:none;}' : ''}
 </style>
 </head>
 <body>
