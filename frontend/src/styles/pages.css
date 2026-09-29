@@ -454,7 +454,7 @@
   display: grid;
   grid-template-columns: minmax(320px, 1fr) minmax(300px, 1fr);
   gap: 24px;
-  max-width: var(--max-wide);
+  max-width: var(--max);
   width: 100%;
   margin: 0 auto;
   padding: 24px;
@@ -987,6 +987,9 @@
     flex-wrap: wrap;
     padding-top: 10px;
     padding-bottom: 10px;
+  }
+  .editor-layout {
+    padding: 16px;
   }
 }
 
