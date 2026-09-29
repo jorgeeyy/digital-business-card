@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Check, Copy, CreditCard, ExternalLink, Sparkles } from 'lucide-react';
 import { useConfig } from '../store';
@@ -20,7 +20,7 @@ export default function Dashboard() {
   const linkUsername = card?.username ?? user?.username ?? null;
   const published = Boolean(card?.published && linkUsername);
   const [copied, setCopied] = useState(false);
-  const frameRef = useRef<HTMLIFrameElement>(null);
+  const [frameNode, setFrameNode] = useState<HTMLIFrameElement | null>(null);
 
   const html = useMemo(
     () => generateCardHtml(config, linkUsername),
@@ -28,14 +28,13 @@ export default function Dashboard() {
   );
 
   useEffect(() => {
-    const iframe = frameRef.current;
-    if (!iframe || !html) return;
-    const doc = iframe.contentDocument;
+    if (!frameNode || !html) return;
+    const doc = frameNode.contentDocument;
     if (!doc) return;
     doc.open();
     doc.write(html);
     doc.close();
-  }, [html]);
+  }, [frameNode, html]);
 
   const name = user?.display_name || user?.email?.split('@')[0] || 'there';
 
@@ -109,7 +108,7 @@ export default function Dashboard() {
         <div className="dash-tile">
           <div className="dash-tile-viewport">
             <iframe
-              ref={frameRef}
+              ref={setFrameNode}
               title="Your card"
               sandbox="allow-same-origin"
               className="dash-tile-frame"
