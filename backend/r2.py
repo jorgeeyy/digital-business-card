@@ -63,7 +63,4 @@ def local_file_url(filename: str) -> str | None:
     """Resolve a local uploads filename to a filesystem path (for serving)."""
     safe = os.path.basename(filename)
     path = UPLOADS_DIR / safe
-    if not path.is_file():
-        return None
-    else:
-        return str(path)
+    return str(path) if path.is_file() else None

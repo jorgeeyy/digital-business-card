@@ -1,23 +1,6 @@
 import { useConfig } from '../store';
 import { socialPlatforms } from '../types';
-
-function getBaseUrl(platform: string, handle: string): string {
-  const cleaned = handle.replace(/^@/, '').trim();
-  if (!cleaned) return '';
-  const map: Record<string, string> = {
-    Instagram: `https://instagram.com/${cleaned}`,
-    LinkedIn: `https://linkedin.com/in/${cleaned}`,
-    'Twitter/X': `https://x.com/${cleaned}`,
-    TikTok: `https://tiktok.com/@${cleaned}`,
-    YouTube: `https://youtube.com/@${cleaned}`,
-    GitHub: `https://github.com/${cleaned}`,
-    Dribbble: `https://dribbble.com/${cleaned}`,
-    Facebook: `https://facebook.com/${cleaned}`,
-    Pinterest: `https://pinterest.com/${cleaned}`,
-    WhatsApp: `https://wa.me/${cleaned}`,
-  };
-  return map[platform] || '';
-}
+import { getBaseUrl } from '../utils/socials';
 
 export default function SocialRows() {
   const { config, addSocial, updateSocial, removeSocial } = useConfig();

@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useCallback, useEffect, useRef, type ReactNode } from 'react';
 import { api, type CardRecord } from './api';
 import { useAuth } from './auth';
+import { clearOnboardingStep } from './utils/onboarding';
 import type { CardConfig, BrandColors, SocialLink, Portrait } from './types';
 
 function storageKey(userId: number): string {
@@ -122,6 +123,7 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
     // Logout: drop that user's local draft (server autosave is the source of truth)
     if (prev !== undefined && prev !== null && userId === null) {
       clearLocalConfig(prev);
+      clearOnboardingStep(prev);
     }
 
     prevUserId.current = userId;

@@ -20,7 +20,6 @@ const GoogleIcon = () => (
 
 function initialMode(pathname: string): Mode {
   if (pathname.includes('login')) return 'login';
-  if (pathname.includes('onboarding')) return 'claim';
   return 'signup';
 }
 
@@ -76,7 +75,7 @@ export default function Auth() {
         goMode('login');
         return;
       }
-      if (user.username) navigate('/dashboard', { replace: true });
+      if (user.username) navigate('/onboarding', { replace: true });
       return;
     }
     if (user) {
@@ -151,7 +150,7 @@ export default function Auth() {
     try {
       await api.claimUsername(u);
       await refresh();
-      navigate('/dashboard', { replace: true });
+      navigate('/onboarding', { replace: true });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
@@ -335,7 +334,7 @@ export default function Auth() {
                 </form>
 
                 <p className="auth-switch">
-                  Next you&apos;ll build your card in the editor.
+                  Next you&apos;ll add your links and publish your card.
                 </p>
               </>
             )}
@@ -444,7 +443,7 @@ export default function Auth() {
                   </li>
                 </ul>
                 <div className="split-aside-foot">
-                  After claiming, you&apos;ll land in the card editor.
+                  After claiming, you&apos;ll finish setup and go live in one pass.
                 </div>
               </>
             )}

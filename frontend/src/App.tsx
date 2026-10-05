@@ -7,6 +7,7 @@ import Landing from './pages/Landing';
 import Auth from './pages/Auth';
 import Dashboard from './pages/Dashboard';
 import Editor from './pages/Editor';
+import Onboarding from './pages/Onboarding';
 import './styles/tokens.css';
 import './styles/base.css';
 import './styles/components.css';
@@ -35,7 +36,10 @@ export default function App() {
               <Route path="/" element={<Landing />} />
               <Route path="/login" element={<Auth />} />
               <Route path="/signup" element={<Auth />} />
-              <Route path="/onboarding" element={<Auth />} />
+              <Route
+                path="/onboarding"
+                element={<RequireAuth><Onboarding /></RequireAuth>}
+              />
               <Route
                 path="/editor"
                 element={<RequireAuth><Editor /></RequireAuth>}

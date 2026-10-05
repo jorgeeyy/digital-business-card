@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { Check, Copy, CreditCard, ExternalLink, Sparkles } from 'lucide-react';
 import { useConfig } from '../store';
 import { useAuth } from '../auth';
 import { publicCardUrl, mediaSrc } from '../api';
+import { readOnboardingStep } from '../utils/onboarding';
 import AppShell from '../components/AppShell';
 
 function timeGreeting() {
@@ -42,6 +43,8 @@ export default function Dashboard() {
     }
   };
 
+  if (user && !user.username) return <Navigate to="/onboarding" replace />;
+
   if (cardLoading) {
     return (
       <AppShell>
@@ -51,6 +54,7 @@ export default function Dashboard() {
   }
 
   if (!card) {
+    const resumeStep = user ? readOnboardingStep(user.id) : null;
     return (
       <AppShell>
         <div className="dash-empty">
@@ -59,6 +63,11 @@ export default function Dashboard() {
           </div>
           <h1>Create your card</h1>
           <p>You don&apos;t have a card yet — build one in a couple of minutes.</p>
+          {resumeStep && (
+            <Link className="btn btn-ghost" to="/onboarding">
+              Continue setup
+            </Link>
+          )}
           <Link className="btn" to="/editor">
             Create your card
           </Link>
