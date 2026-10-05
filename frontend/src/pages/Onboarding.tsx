@@ -7,9 +7,6 @@ import { generateCardHtml } from '../utils/generateCard';
 import { socialPlatforms } from '../types';
 import { getBaseUrl, socialHandleError } from '../utils/socials';
 import { validateField, emailSchema } from '../validation';
-import BrandPicker from '../components/BrandPicker';
-import FontPicker from '../components/FontPicker';
-import LayoutPicker from '../components/LayoutPicker';
 import SocialIcon from '../components/SocialIcon';
 import AppShell from '../components/AppShell';
 import {
@@ -27,11 +24,7 @@ const STEP_META: Record<OnboardingStep, { title: string; sub: string }> = {
   },
   details: {
     title: 'Your details',
-    sub: 'The name and info shown at the top of your card.',
-  },
-  theme: {
-    title: 'Make it yours',
-    sub: 'Colors, type, and layout — tune it until it feels like you, then go live.',
+    sub: 'The name and info shown at the top of your card. Colors and layout come next in the editor.',
   },
 };
 
@@ -85,15 +78,6 @@ export default function Onboarding() {
       if (bad) {
         setAttempted(true);
         toast.error(`Add a handle for ${bad.platform}, or remove it`);
-        return;
-      }
-    }
-    if (step === 'details') {
-      if (!config.name.trim() || validateField(emailSchema, config.email)) {
-        setAttempted(true);
-        toast.error(
-          !config.name.trim() ? 'Add your name to continue' : 'Fix your email to continue',
-        );
         return;
       }
     }
@@ -330,23 +314,6 @@ export default function Onboarding() {
             </div>
           )}
 
-          {step === 'theme' && (
-            <>
-              <div className="onb-group">
-                <div className="onb-group-label">Colors</div>
-                <BrandPicker />
-              </div>
-              <div className="onb-group">
-                <div className="onb-group-label">Typography</div>
-                <FontPicker />
-              </div>
-              <div className="onb-group">
-                <div className="onb-group-label">Layout</div>
-                <LayoutPicker />
-              </div>
-            </>
-          )}
-
           <div className="onb-nav">
             {step === 'socials' ? (
               <span aria-hidden="true" />
@@ -355,7 +322,7 @@ export default function Onboarding() {
                 Back
               </button>
             )}
-            {step === 'theme' ? (
+            {step === 'details' ? (
               <button type="button" className="btn" disabled={publishing} onClick={handlePublish}>
                 {publishing ? 'Publishing…' : 'Publish my card'}
               </button>

@@ -1,4 +1,4 @@
-export const ONBOARDING_STEPS = ['socials', 'details', 'theme'] as const;
+export const ONBOARDING_STEPS = ['socials', 'details'] as const;
 
 export type OnboardingStep = (typeof ONBOARDING_STEPS)[number];
 
@@ -9,8 +9,11 @@ function storageKey(userId: number): string {
 export function readOnboardingStep(userId: number): OnboardingStep | null {
   try {
     const raw = localStorage.getItem(storageKey(userId));
-    return raw && (ONBOARDING_STEPS as readonly string[]).includes(raw)
-      ? (raw as OnboardingStep)
+    if (!raw) return null;
+    // 'theme' was a step in the old 3-step flow; resume at the final step.
+    const step = raw === 'theme' ? 'details' : raw;
+    return (ONBOARDING_STEPS as readonly string[]).includes(step)
+      ? (step as OnboardingStep)
       : null;
   } catch {
     return null;
