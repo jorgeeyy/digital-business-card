@@ -13,7 +13,6 @@ import {
   ONBOARDING_STEPS,
   readOnboardingStep,
   writeOnboardingStep,
-  clearOnboardingStep,
   type OnboardingStep,
 } from '../utils/onboarding';
 
@@ -24,7 +23,7 @@ const STEP_META: Record<OnboardingStep, { title: string; sub: string }> = {
   },
   details: {
     title: 'Your details',
-    sub: 'The name and info shown at the top of your card. Colors and layout come next in the editor.',
+    sub: 'The name and info shown at the top of your card — then publish it from your dashboard.',
   },
 };
 
@@ -38,7 +37,7 @@ export default function Onboarding() {
     addSocial,
     updateSocial,
     removeSocial,
-    publish,
+    saveNow,
   } = useConfig();
   const navigate = useNavigate();
 
@@ -46,7 +45,7 @@ export default function Onboarding() {
     () => (user ? readOnboardingStep(user.id) : null) ?? 'socials',
   );
   const [attempted, setAttempted] = useState(false);
-  const [publishing, setPublishing] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   // Remember which step the user is on so they can resume later.
   useEffect(() => {
@@ -115,12 +114,12 @@ export default function Onboarding() {
     }
   };
 
-  const handlePublish = async () => {
-    if (!user?.username) return;
+  const handleViewDashboard = async () => {
+    if (!user) return;
     if (config.socials.length < 2) {
       goTo('socials');
       setAttempted(true);
-      toast.error('Add at least two links before publishing');
+      toast.error('Add at least two links before continuing');
       return;
     }
     const badSocial = config.socials.find((s) => socialHandleError(s.platform, s.handle));
@@ -133,7 +132,7 @@ export default function Onboarding() {
     if (!config.name.trim()) {
       goTo('details');
       setAttempted(true);
-      toast.error('Add your name before publishing');
+      toast.error('Add your name before continuing');
       return;
     }
     const emailError = validateField(emailSchema, config.email);
@@ -143,18 +142,13 @@ export default function Onboarding() {
       toast.error(emailError);
       return;
     }
-    setPublishing(true);
+    setSaving(true);
     try {
-      await publish(user.username, generateCardHtml(config, user.username));
-      clearOnboardingStep(user.id);
-      toast.success('Your card is live!', {
-        description: `tapcard.app/${user.username}`,
-      });
+      // Save a server-side draft; publishing happens from the dashboard.
+      await saveNow(generateCardHtml(config, null));
       navigate('/dashboard', { replace: true });
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Publish failed');
     } finally {
-      setPublishing(false);
+      setSaving(false);
     }
   };
 
@@ -323,8 +317,13 @@ export default function Onboarding() {
               </button>
             )}
             {step === 'details' ? (
-              <button type="button" className="btn" disabled={publishing} onClick={handlePublish}>
-                {publishing ? 'Publishing…' : 'Publish my card'}
+              <button
+                type="button"
+                className="btn"
+                disabled={saving}
+                onClick={handleViewDashboard}
+              >
+                {saving ? 'Opening…' : 'View in dashboard'}
               </button>
             ) : (
               <button type="button" className="btn" onClick={next}>

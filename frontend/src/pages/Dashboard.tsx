@@ -1,10 +1,14 @@
 import { useState } from 'react';
-import { Link, Navigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { Check, Copy, CreditCard, ExternalLink, Sparkles } from 'lucide-react';
 import { useConfig } from '../store';
 import { useAuth } from '../auth';
 import { publicCardUrl, mediaSrc } from '../api';
-import { readOnboardingStep } from '../utils/onboarding';
+import { generateCardHtml } from '../utils/generateCard';
+import { socialHandleError } from '../utils/socials';
+import { clearOnboardingStep, readOnboardingStep } from '../utils/onboarding';
+import { validateField, emailSchema } from '../validation';
 import AppShell from '../components/AppShell';
 
 function timeGreeting() {
@@ -15,11 +19,13 @@ function timeGreeting() {
 }
 
 export default function Dashboard() {
-  const { config, card, cardLoading } = useConfig();
+  const { config, card, cardLoading, publish } = useConfig();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const linkUsername = card?.username ?? user?.username ?? null;
   const published = Boolean(card?.published && linkUsername);
   const [copied, setCopied] = useState(false);
+  const [publishing, setPublishing] = useState(false);
 
   const name = user?.display_name || user?.email?.split('@')[0] || 'there';
   const initials =
@@ -43,6 +49,39 @@ export default function Dashboard() {
     }
   };
 
+  const handlePublish = async () => {
+    if (!user?.username) return;
+    if (!config.name.trim()) {
+      toast.error('Add your name before publishing');
+      navigate('/onboarding');
+      return;
+    }
+    const emailError = validateField(emailSchema, config.email);
+    if (emailError) {
+      toast.error(emailError);
+      navigate('/onboarding');
+      return;
+    }
+    const badSocial = config.socials.find((s) => socialHandleError(s.platform, s.handle));
+    if (badSocial) {
+      toast.error(`Add a handle for ${badSocial.platform} before publishing`);
+      navigate('/onboarding');
+      return;
+    }
+    setPublishing(true);
+    try {
+      await publish(user.username, generateCardHtml(config, user.username));
+      clearOnboardingStep(user.id);
+      toast.success('Your card is live!', {
+        description: `tapcard.app/${user.username}`,
+      });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Publish failed');
+    } finally {
+      setPublishing(false);
+    }
+  };
+
   if (user && !user.username) return <Navigate to="/onboarding" replace />;
 
   if (cardLoading) {
@@ -53,7 +92,10 @@ export default function Dashboard() {
     );
   }
 
-  if (!card) {
+  // A draft exists server-side, or locally (e.g. just finished onboarding).
+  const hasDraft = Boolean(card) || config.name.trim().length > 0;
+
+  if (!hasDraft) {
     const resumeStep = user ? readOnboardingStep(user.id) : null;
     return (
       <AppShell>
@@ -134,18 +176,28 @@ export default function Dashboard() {
             )}
           </div>
           <div className="dash-actions" aria-label="Card actions">
-            <button
-              type="button"
-              className="dash-round"
-              disabled={!published}
-              title={published ? 'Open your public card' : 'Publish your card first'}
-              aria-label="View public card"
-              onClick={() => {
-                if (published && linkUsername) window.open(publicCardUrl(linkUsername), '_blank');
-              }}
-            >
-              <ExternalLink size={17} />
-            </button>
+            {published ? (
+              <button
+                type="button"
+                className="dash-round"
+                title="Open your public card"
+                aria-label="View public card"
+                onClick={() => {
+                  if (linkUsername) window.open(publicCardUrl(linkUsername), '_blank');
+                }}
+              >
+                <ExternalLink size={17} />
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="btn dash-publish"
+                disabled={publishing}
+                onClick={handlePublish}
+              >
+                {publishing ? 'Publishing…' : 'Publish'}
+              </button>
+            )}
             <Link className="btn btn-ghost dash-edit" to="/editor">
               Edit
             </Link>

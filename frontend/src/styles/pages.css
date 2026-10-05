@@ -1214,6 +1214,12 @@
   font-weight: 600;
 }
 
+.dash-publish {
+  border-radius: var(--r-pill);
+  padding: 11px 24px;
+  font-weight: 600;
+}
+
 .dash-empty {
   flex: 1;
   display: flex;
